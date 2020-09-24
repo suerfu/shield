@@ -1,0 +1,46 @@
+/run/initialize
+/tracking/verbose 0
+
+# Make sure you always have this line below with the same value as the one in '/generator/setAngle'
+# This line rotates the far-side detectors an angle corresponding to the generator position
+/placement/definePMTAngle 45
+
+# Place the far-side detectors. The distances are in unit of cm
+#/placement/addNaIAngle1 9.32
+#/placement/setDistance 78.55
+/placement/addNaIAngle2 13.82
+/placement/setDistance 77.8
+#/placement/addNaIAngle3 17.22
+#/placement/setDistance 77.7
+/placement/addNaIAngle4 20.295
+/placement/setDistance 56.48
+#/placement/addNaIAngle5 28.86
+#/placement/setDistance 54.1
+/placement/addNaIAngle6 30.205
+/placement/setDistance 50.55
+#/placement/addNaIAngle7 39.98
+#/placement/setDistance 50.1
+/placement/addNaIAngle8 45.573
+/placement/setDistance 44.05
+
+# if generator mode is gamma, then GPS is used and parameters are entered manually.
+/generator/setMode gammas
+/gps/particle   ion
+/gps/ion 55 137
+/gps/energy 0 keV
+
+/gps/pos/type Plane
+/gps/pos/shape Circle
+/gps/pos/centre -17.5981 17.5981 -9.5322 cm 
+/gps/pos/radius 1.5 mm
+/gps/pos/rot1 1 1 0
+/gps/pos/rot2 0 0 1
+
+/gps/ang/type iso
+/gps/ang/rot1 1 1 0
+/gps/ang/rot2 0 0 1
+/gps/ang/mintheta 1.57079633 rad
+/gps/ang/maxtheta 3.14159265 rad
+
+/run/printProgress 1000000
+#/run/beamOn 3000000000

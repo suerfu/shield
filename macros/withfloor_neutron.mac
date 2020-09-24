@@ -1,0 +1,40 @@
+/run/initialize
+/tracking/verbose 1
+
+/random/setSeeds 14053 45012
+
+# Set the distance between the generator and the target, or the distance is 60.8 by default
+/generator/setMode neutrons
+/generator/setAngle 45
+/generator/setDistance 60.8
+
+# Make sure you always have this line below with the same value as the one in '/generator/setAngle'
+# This line rotates the far-side detectors an angle corresponding to the generator position
+/placement/definePMTAngle 45
+
+/process/list
+
+# Set the file name
+/filename/setFilename withfloor_neutron.root
+
+# Place the far-side detectors
+# The distances are in unit of cm
+/placement/addAngle1 88.84
+/placement/setDistance 135.9
+/placement/addAngle2 -87.64
+/placement/setDistance 82.4
+/placement/addAngle3 55.79
+/placement/setDistance 109.1
+/placement/addAngle4 -38.63
+/placement/setDistance 117.75
+/placement/addAngle5 31.93
+/placement/setDistance 131.65
+/placement/addAngle6 -26.26
+/placement/setDistance 148.4
+/placement/addAngle7 20.66
+/placement/setDistance 149.8
+/placement/addAngle8 -15.86
+/placement/setDistance 149.25
+
+/run/printProgress 10
+/run/beamOn 100000000
