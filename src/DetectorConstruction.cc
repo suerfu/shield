@@ -102,12 +102,12 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     G4NistManager* mat_man = G4NistManager::Instance(); //material mananger
 
-    G4Material* world_material = mat_man->FindOrBuildMaterial("G4Galactic");
-    G4Material* frame_material = mat_man->FindOrBuildMaterial("G4_STAINLESS_STEEL");
+    G4Material* world_material = mat_man->FindOrBuildMaterial("G4_Galactic");
+    G4Material* frame_material = mat_man->FindOrBuildMaterial("G4_STAINLESS-STEEL");
 
-    G4Material* Pb_material = G4Material::GetMaterial("G4_Pb");
-    G4Material* PE_material = G4Material::GetMaterial("G4_POLYETHYLENE");
-    G4Material* Cu_material = G4Material::GetMaterial("G4_Cu");
+    G4Material* Pb_material = mat_man->FindOrBuildMaterial("G4_Pb");
+    G4Material* PE_material = mat_man->FindOrBuildMaterial("G4_POLYETHYLENE");
+    G4Material* Cu_material = mat_man->FindOrBuildMaterial("G4_Cu");
     G4Material* chamber_material = G4Material::GetMaterial("liquid_helium");
 
 
