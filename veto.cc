@@ -26,7 +26,7 @@
 
 
 void PrintUsage() {
-    G4cerr << "Usage: veto [-m macro.mac ] [-u] [-f output.root] [-r seed0 seed1] [-g generator]" << G4endl;
+    G4cerr << "\nUsage: veto [-m macro.mac ] [-u] [-f output.root] [-r seed0 seed1] [-g generator]" << G4endl;
     G4cerr << "\t-m, used to spefify the macro file to execute.\n";
     G4cerr << "\t-u, enter interactive session.\n";
     G4cerr << "\t-f, spefify output ROOT file.\n";
@@ -42,8 +42,10 @@ int main(int argc,char** argv){
     // Evaluate arguments
     //
 
-    // Use the flags to determine whether program run in batch mode or interactive mode.
-    bool exit = false;
+    bool batch = false;
+        // Use the flags to determine whether program run in batch mode or interactive mode.
+
+    bool exit = true;
         // if exit is set true (no valid argument), the program will print usage and exit.
         // user must explicitly specify batch mode by providing a macro, or the interactive mode by -u.
 
@@ -68,11 +70,20 @@ int main(int argc,char** argv){
     for ( G4int i=1; i<argc; i++ ) {
         if ( G4String(argv[i] ) == "-m" ){
             macro = argv[++i];
-            exit = false;
-                // batch mode.
+            if( macro.find(".mac")==string::npos ){
+                macro = "";
+                batch = true;
+                exit = false;
+                    // batch mode.
+            }
+            else{
+                G4cout << "Macro (ending with .mac) not specified. Program terminating...\n";
+                exit = true;
+            }
         }
         else if ( G4String(argv[i]) == "-u" ){
             exit = false;
+            batch = false;
                 // enter user interactive mode.
         }
         else if ( G4String(argv[i]) == "-f" ){
@@ -103,7 +114,7 @@ int main(int argc,char** argv){
     // Detect interactive mode (if no macro provided) and define UI session
     //
     G4UIExecutive* ui = 0;
-    if ( ! macro.size() ) {
+    if ( batch==false ) {
         ui = new G4UIExecutive( argc, argv );
     }
 
@@ -150,14 +161,15 @@ int main(int argc,char** argv){
     runManager->SetUserAction( new TrackingAction( eventAction ) );
     runManager->SetUserAction( new SteppingAction( detConstruction, eventAction ) );
 
+    G4VisManager* visManager = new G4VisExecutive;
+    visManager->Initialize();
 
     // Get the pointer to the User Interface manager
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
-
     // Process macro or start UI session
   
-    if ( macro.size() ){
+    if ( batch==true ){
         // batch mode
         // actionInitialization
         runAction->AddMacro( macro );
@@ -166,8 +178,6 @@ int main(int argc,char** argv){
     }
     else{
         // interactive mode : define UI session
-        G4VisManager* visManager = new G4VisExecutive;
-        visManager->Initialize();
 
         UImanager->ApplyCommand("/control/execute init_vis.mac");
         if (ui->IsGUI()) {
@@ -175,10 +185,12 @@ int main(int argc,char** argv){
         }
         ui->SessionStart();
 
-        delete visManager;
-        delete ui;
     }
 
+    delete ui;
+    delete visManager;
+        // Note that visManager is deleted after UI manager.
+        // Otherwise seg fault upon closing GUI.
 
     // Job termination
     // Free the store: user actions, physics_list and detector_description are
