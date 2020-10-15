@@ -52,7 +52,7 @@ int main(int argc,char** argv){
 
     // macro and output filename.
     // These variables are set by inspecting the commandline argument.
-    G4String macro;
+    string macro;
     G4String filename = "";
 
 
@@ -68,15 +68,16 @@ int main(int argc,char** argv){
     // Loop over the commandline arguments.
     // 
     for ( G4int i=1; i<argc; i++ ) {
-        if ( G4String(argv[i] ) == "-m" ){
-            macro = argv[++i];
-            if( macro.find(".mac")==string::npos ){
-                macro = "";
-                batch = true;
-                exit = false;
-                    // batch mode.
+        if ( G4String( argv[i] ) == "-m" ){
+            if( i!=argc-1){
+                macro = argv[++i];
+                if( macro.find(".mac")!=string::npos ){
+                    batch = true;
+                    exit = false;
+                        // batch mode.
+                }
             }
-            else{
+            if( batch!=true ){
                 G4cout << "Macro (ending with .mac) not specified. Program terminating...\n";
                 exit = true;
             }
@@ -156,13 +157,12 @@ int main(int argc,char** argv){
     EventAction* eventAction = new EventAction( runAction );
     runManager->SetUserAction( eventAction );
 
-    
     // Tracking and stepping
     runManager->SetUserAction( new TrackingAction( eventAction ) );
     runManager->SetUserAction( new SteppingAction( detConstruction, eventAction ) );
 
     G4VisManager* visManager = new G4VisExecutive;
-    visManager->Initialize();
+
 
     // Get the pointer to the User Interface manager
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
@@ -179,12 +179,13 @@ int main(int argc,char** argv){
     else{
         // interactive mode : define UI session
 
+        visManager->Initialize();
+
         UImanager->ApplyCommand("/control/execute init_vis.mac");
         if (ui->IsGUI()) {
             UImanager->ApplyCommand("/control/execute gui.mac");
         }
         ui->SessionStart();
-
     }
 
     delete ui;

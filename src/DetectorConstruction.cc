@@ -42,6 +42,8 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 
+#include<sstream>
+using std::stringstream;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -53,19 +55,12 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
     // Set default values for the dimensions.
     
     // World
-    world_x = 11.*m;
+    world_x = 12.*m;
     world_y = 12.*m;
-    world_z = 3.2*m;
+    world_z = 3*m;
 
-    // Experimental chamber
-    chamber_h = 30.*cm;
-
-    // Copper shielding
-    shielding_Cu = 6*cm;
-    shielding_PE = 20*cm;
-    shielding_Pb = 30*cm;
-    shielding_SF = 5*cm;
-
+    farside_rot = new G4RotationMatrix();
+    fs_count = 0;
 }
 
 
@@ -90,6 +85,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct(){
 
 
 G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
+    
     /*
     // Clean old geometry, if any
     G4GeometryManager::GetInstance()->OpenGeometry();
@@ -102,13 +98,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     G4NistManager* mat_man = G4NistManager::Instance(); //material mananger
 
-    G4Material* world_material = mat_man->FindOrBuildMaterial("G4_Galactic");
-    G4Material* frame_material = mat_man->FindOrBuildMaterial("G4_STAINLESS-STEEL");
-
-    G4Material* Pb_material = mat_man->FindOrBuildMaterial("G4_Pb");
-    G4Material* PE_material = mat_man->FindOrBuildMaterial("G4_POLYETHYLENE");
-    G4Material* Cu_material = mat_man->FindOrBuildMaterial("G4_Cu");
-    G4Material* chamber_material = G4Material::GetMaterial("liquid_helium");
+    G4Material* world_material = mat_man->FindOrBuildMaterial("G4_AIR");
+    G4Material* NaI_material = mat_man->FindOrBuildMaterial("NaI");
 
 
     //===============  Build Geometry ===============//
@@ -116,72 +107,26 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     // World
     G4Box* world_solid = new G4Box( "world_solid", world_x/2.0, world_y/2.0, world_z/2.0);
-    G4LogicalVolume* world_lv = new G4LogicalVolume( world_solid, world_material, "world_lv");
+    world_lv = new G4LogicalVolume( world_solid, world_material, "world_lv");
     G4VPhysicalVolume* world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), world_lv, "world_pv", 0, false, 0,fCheckOverlaps);
 
 
-    // Support Frame
-    G4double frame_z = chamber_h+2*shielding_Cu+2*shielding_PE+2*shielding_Pb+2*shielding_SF;
-    G4double frame_x = frame_z;
-    G4double frame_y = frame_z;
+    // NaI in the center
 
-    G4ThreeVector frame_offset( 0, 0, -world_z/2+frame_z/2+10*cm);
+    G4double center_dia = 2*2.54*cm;
+
+    G4ThreeVector center_offset( 0, 0, 0);
         // The additional 10 cm account for the rail system
 
-    G4Box* frame_solid = new G4Box( "frame_solid", frame_x/2.0, frame_y/2.0, frame_z/2.0);
-    G4LogicalVolume* frame_lv = new G4LogicalVolume( frame_solid, frame_material, "frame_lv");
-    new G4PVPlacement( 0, frame_offset, frame_lv, "frame_pv", world_lv, false, 0,fCheckOverlaps);
-
-
-    // Lead shielding
-    G4double Pb_z = chamber_h+2*shielding_Cu+2*shielding_PE+2*shielding_Pb;
-    G4double Pb_x = Pb_z;
-    G4double Pb_y = Pb_z;
-
-    G4Box* Pb_solid = new G4Box( "Pb_solid", Pb_x/2.0, Pb_y/2.0, Pb_z/2.0);
-    G4LogicalVolume* Pb_lv = new G4LogicalVolume( Pb_solid, Pb_material, "Pb_lv");
-    new G4PVPlacement( 0, G4ThreeVector(0,0,0), Pb_lv, "Pb_pv", frame_lv, false, 0,fCheckOverlaps);
-    
-
-    // Polyethylene shielding
-    G4double PE_z = chamber_h+2*shielding_Cu+2*shielding_PE;
-    G4double PE_x = PE_z;
-    G4double PE_y = PE_z;
-
-    G4Box* PE_solid = new G4Box( "PE_solid", PE_x/2.0, PE_y/2.0, PE_z/2.0);
-    G4LogicalVolume* PE_lv = new G4LogicalVolume( PE_solid, PE_material, "PE_lv");
-    new G4PVPlacement( 0, G4ThreeVector(0,0,0), PE_lv, "PE_pv", Pb_lv, false, 0,fCheckOverlaps);
-
-
-    // Inner copper shielding
-    G4double Cu_z = chamber_h+2*shielding_Cu;
-    G4double Cu_x = Cu_z;
-    G4double Cu_y = Cu_z;
-
-    G4Box* Cu_solid = new G4Box( "Cu_solid", Cu_x/2.0, Cu_y/2.0, Cu_z/2.0);
-    G4LogicalVolume* Cu_lv = new G4LogicalVolume( Cu_solid, Cu_material, "Cu_lv");
-    new G4PVPlacement( 0, G4ThreeVector(0,0,0), Cu_lv, "Cu_pv", PE_lv, false, 0,fCheckOverlaps);
-
-
-    // Experimental chamber
-    G4double chamber_z = chamber_h;
-    G4double chamber_x = chamber_z;
-    G4double chamber_y = chamber_z;
-
-    G4Box* chamber_solid = new G4Box( "chamber_solid", chamber_x/2.0, chamber_y/2.0, chamber_z/2.0);
-    G4LogicalVolume* chamber_lv = new G4LogicalVolume( chamber_solid, chamber_material, "chamber_lv");
-    new G4PVPlacement( 0, G4ThreeVector(0,0,0), chamber_lv, "chamber_pv", Cu_lv, false, 0,fCheckOverlaps);
+    G4Tubs* center_solid = new G4Tubs( "center_solid", 0, center_dia/2, center_dia/2, 0, CLHEP::twopi);
+    G4LogicalVolume* center_lv = new G4LogicalVolume( center_solid, NaI_material, "center_lv");
+    new G4PVPlacement( 0, center_offset, center_lv, "center", world_lv, false, 0, fCheckOverlaps);
 
 
     //===============  Visualization ===============//
 
     world_lv->SetVisAttributes( G4VisAttributes::Invisible );
-
-    frame_lv->SetVisAttributes( G4VisAttributes(G4Colour( 0, 0, 1, 0.5)) );
-    Pb_lv->SetVisAttributes( G4VisAttributes(G4Colour( 0.5, 0.5, 0.5, 0.5)) );
-    PE_lv->SetVisAttributes( G4VisAttributes(G4Colour( 0.9, 0.9, 0.9, 0.5)) );
-    Cu_lv->SetVisAttributes( G4VisAttributes(G4Colour( 0.9, 0.4, 0., 0.5)) );
-    chamber_lv->SetVisAttributes( G4VisAttributes(G4Colour( 0.9, 0., 0.9, 0.5)) );
+    center_lv->SetVisAttributes( G4VisAttributes(G4Colour( 1., 0, 1., 0.5)) );
 
     return world_pv;
 }
@@ -196,10 +141,14 @@ void DetectorConstruction::DefineMaterials(){
     G4double z;  // z=mean number of protons;
     G4double density; //, fractionMass;
     G4String symbol, name;
-    // G4int nComponents, nAtoms;
-    G4double temp;
+    G4int ncomponents, natoms;
 
-    new G4Material("liquid_helium",   z=2., a= 4.00*g/mole,  density= 0.141*g/cm3, kStateLiquid, temp=3.*kelvin);
+    G4Element* elNa = new G4Element( name="Sodium", symbol="Na", z = 11, a = 22.990 *g/mole );
+    G4Element* elI  = new G4Element( name="Iodine", symbol="I" , z = 53, a = 253.81*g/mole );
+
+    G4Material* NaI = new G4Material( "NaI", density= 3.67*g/cm3, ncomponents = 2);
+    NaI->AddElement( elNa, natoms=1 );
+    NaI->AddElement( elI,  natoms=1 );
 
     /*
     G4NistManager* nistManager =  G4NistManager::Instance();
@@ -207,8 +156,33 @@ void DetectorConstruction::DefineMaterials(){
     G4Element* elH  = new G4Element(name = "Hydrogen"   , symbol = "H"  , z = 1.  , a =   1.008*g/mole);
     G4Element* elC  = new G4Element(name = "Carbon"     , symbol = "C"  , z = 6.  , a =  12.011*g/mole);
     */
+
     // Print materials
     G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
 
+void DetectorConstruction::PlaceFarSideDetector(){
+
+    // Use stringstream to parameterize the farside detector name with count number
+    stringstream ss;
+    ss << "fs" << fs_count;
+
+    G4NistManager* mat_man = G4NistManager::Instance(); //material mananger
+    G4Material* NaI_material = mat_man->FindOrBuildMaterial("NaI");
+
+    // Place the far-side detector.
+    G4Tubs* center_solid = new G4Tubs( "fs_solid", 0, 2*2.54*cm/2, 2*2.54*cm/2, 0, CLHEP::twopi);
+    G4LogicalVolume* center_lv = new G4LogicalVolume( center_solid, NaI_material, "fs_lv");
+
+    G4RotationMatrix* rot = new G4RotationMatrix( *farside_rot );
+    new G4PVPlacement( rot, farside_position, center_lv, ss.str(), world_lv, false, 0, fCheckOverlaps);
+
+    // Inform run manager about geometry change.
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+    // After the placement, increment the counter and reset the rotation matrix for the next farside detector.
+    fs_count++;
+    *farside_rot = G4RotationMatrix();
+
+}

@@ -55,15 +55,33 @@ private:
     G4double world_y;
     G4double world_z;
 
-    // Experimental chamber
-    G4double chamber_h;
+    G4LogicalVolume* world_lv;
 
-    // Various shielding
-    G4double shielding_Cu;
-    G4double shielding_PE;
-    G4double shielding_Pb;
-    G4double shielding_SF;
+    G4ThreeVector farside_position;
+    G4RotationMatrix* farside_rot;
 
+    friend DetectorConstructionMessenger;
+
+    void SetFarSidePosition( G4ThreeVector x){
+        farside_position = x;
+    }
+
+    void FarSideRotateX( G4double a){
+        farside_rot->rotateX(a);
+    }
+
+    void FarSideRotateY( G4double a){
+        farside_rot->rotateY(a);
+    }
+
+    void FarSideRotateZ( G4double a){
+        farside_rot->rotateZ(a);
+    }
+
+    void PlaceFarSideDetector();
+
+    G4int fs_count;
+        // used to keep track of number of farside detectors.
 };
 
 

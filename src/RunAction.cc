@@ -43,7 +43,7 @@ void RunAction::BeginOfRunAction(const G4Run* /*run*/){
         G4cout << "Output ROOT file " << output_name << " created." << G4endl;
 
         if( output_file ){
-            data_tree = new TTree("", "Track-level info for the run");
+            data_tree = new TTree("events", "Track-level info for the run");
             G4cout << "Output TTree object created." << G4endl;
         }
     }
