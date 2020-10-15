@@ -55,9 +55,9 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
     // Set default values for the dimensions.
     
     // World
-    world_x = 12.*m;
-    world_y = 12.*m;
-    world_z = 3*m;
+    world_x = 3.*m;
+    world_y = 3.*m;
+    world_z = 1.*m;
 
     farside_rot = new G4RotationMatrix();
     fs_count = 0;
@@ -108,25 +108,26 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
     // World
     G4Box* world_solid = new G4Box( "world_solid", world_x/2.0, world_y/2.0, world_z/2.0);
     world_lv = new G4LogicalVolume( world_solid, world_material, "world_lv");
-    G4VPhysicalVolume* world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), world_lv, "world_pv", 0, false, 0,fCheckOverlaps);
+    G4VPhysicalVolume* world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), world_lv, "world", 0, false, 0,fCheckOverlaps);
 
 
     // NaI in the center
 
-    G4double center_dia = 2*2.54*cm;
+    G4double medium_dia = world_x;
+    G4double medium_h   = 50*cm ;
 
-    G4ThreeVector center_offset( 0, 0, 0);
+    G4ThreeVector medium_offset( 0, 0, world_z/2-medium_h/2);
         // The additional 10 cm account for the rail system
 
-    G4Tubs* center_solid = new G4Tubs( "center_solid", 0, center_dia/2, center_dia/2, 0, CLHEP::twopi);
-    G4LogicalVolume* center_lv = new G4LogicalVolume( center_solid, NaI_material, "center_lv");
-    new G4PVPlacement( 0, center_offset, center_lv, "center", world_lv, false, 0, fCheckOverlaps);
+    G4Tubs* medium_solid = new G4Tubs( "medium_solid", 0, medium_dia/2, medium_h/2, 0, CLHEP::twopi);
+    G4LogicalVolume* medium_lv = new G4LogicalVolume( medium_solid, NaI_material, "medium_lv");
+    new G4PVPlacement( 0, medium_offset, medium_lv, "medium", world_lv, false, 0, fCheckOverlaps);
 
 
     //===============  Visualization ===============//
 
     world_lv->SetVisAttributes( G4VisAttributes::Invisible );
-    center_lv->SetVisAttributes( G4VisAttributes(G4Colour( 1., 0, 1., 0.5)) );
+    medium_lv->SetVisAttributes( G4VisAttributes(G4Colour( 1., 0, 1., 0.5)) );
 
     return world_pv;
 }
@@ -164,6 +165,9 @@ void DetectorConstruction::DefineMaterials(){
 
 void DetectorConstruction::PlaceFarSideDetector(){
 
+    // The following code is used in the simulation of scattering experiments.
+    // It is not necessary in studying propagation of gamma rays in rocks.
+    /*
     // Use stringstream to parameterize the farside detector name with count number
     stringstream ss;
     ss << "fs" << fs_count;
@@ -184,5 +188,5 @@ void DetectorConstruction::PlaceFarSideDetector(){
     // After the placement, increment the counter and reset the rotation matrix for the next farside detector.
     fs_count++;
     *farside_rot = G4RotationMatrix();
-
+    */
 }

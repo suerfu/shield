@@ -77,6 +77,7 @@ void EventAction::BeginOfEventAction(const G4Event*){
             data_tree->Branch("eventID", &eventID, "eventID/I");
             data_tree->Branch("trackID", &trackID, "trackID/I");
             data_tree->Branch("stepID", &stepID, "stepID/I");
+            data_tree->Branch("nParticle", &nParticle, "nParticle/I");
 
             // information about its idenity
             data_tree->Branch("particle", particle_name, "particle[16]/C");
@@ -115,68 +116,42 @@ void EventAction::EndOfEventAction(const G4Event* event){
             G4cout << "---> End of event: " << evtID << G4endl;
         }
 
-//        if_helium = 0;
-//        if_farside = 0;
-
-        // Select the tracks of interest
         for( size_t i=0; i < stepCollection.size(); ++i ){
-
+            nParticle = stepCollection.size();
+            eventID = stepCollection[i].GetEventID();
             trackID = stepCollection[i].GetTrackID();
-            tmp_volume_name = stepCollection[i].GetVolumeName();
+            stepID = stepCollection[i].GetStepID();
             edep = stepCollection[i].GetDepositedEnergy();
+
+            parentID = stepCollection[i].GetParentID();
+
             tmp_particle_name = stepCollection[i].GetParticleName();
+            tmp_volume_name = stepCollection[i].GetVolumeName();
+            tmp_process_name = stepCollection[i].GetProcessName();
 
-            if( tmp_volume_name=="liquid helium" && edep!=0){
-//                if_helium = 1;
-            }
-            if(edep!=0 && ( tmp_volume_name.find("NaI")==0 || tmp_volume_name.find("LS")==0) ){
-                // the volume name start with NaI or LS
-//                if_farside = 1;
-            }
+            strncpy( particle_name, tmp_particle_name.c_str(), max_char_len);
+            strncpy( process_name, tmp_process_name.c_str(), max_char_len);
+            strncpy( volume_name, tmp_volume_name.c_str(), max_char_len);
+
+            volume_copy_number = stepCollection[i].GetVolumeCopyNumber();
+            Eki = stepCollection[i].GetEki();
+            Ekf = stepCollection[i].GetEkf();
+
+            position = stepCollection[i].GetPosition();
+            momentum = stepCollection[i].GetMomentumDirection();
+
+            x = position.x();
+            y = position.y();
+            z = position.z();
+
+            px = momentum.x();
+            py = momentum.y();
+            pz = momentum.z();
+
+            global_time = stepCollection[i].GetGlobalTime();
+
+            data_tree->Fill();
         }
-
-        // There is coincidence. Fill the wanted tracks
-        if( 1 /*if_farside==1 && if_helium==1*/ ){
-
-            for( size_t i=0; i < stepCollection.size(); ++i ){
-                eventID = stepCollection[i].GetEventID();
-                trackID = stepCollection[i].GetTrackID();
-                stepID = stepCollection[i].GetStepID();
-                edep = stepCollection[i].GetDepositedEnergy();
-
-                parentID = stepCollection[i].GetParentID();
-
-                tmp_particle_name = stepCollection[i].GetParticleName();
-                tmp_volume_name = stepCollection[i].GetVolumeName();
-                tmp_process_name = stepCollection[i].GetProcessName();
-
-                strncpy( particle_name, tmp_particle_name.c_str(), max_char_len);
-                strncpy( process_name, tmp_process_name.c_str(), max_char_len);
-                strncpy( volume_name, tmp_volume_name.c_str(), max_char_len);
-
-                volume_copy_number = stepCollection[i].GetVolumeCopyNumber();
-                Eki = stepCollection[i].GetEki();
-                Ekf = stepCollection[i].GetEkf();
-
-                position = stepCollection[i].GetPosition();
-                momentum = stepCollection[i].GetMomentumDirection();
-
-                x = position.x();
-                y = position.y();
-                z = position.z();
-
-                px = momentum.x();
-                py = momentum.y();
-                pz = momentum.z();
-
-                global_time = stepCollection[i].GetGlobalTime();
-
-                data_tree->Fill();
-            }
-        }
-
-//        if_helium = 0;
-//        if_farside = 0;
     }
 
     stepCollection.clear();

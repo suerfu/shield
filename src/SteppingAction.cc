@@ -32,8 +32,25 @@ void SteppingAction::UserSteppingAction(const G4Step* step){
     // Don't save the out of world step
     if(!step->GetPostStepPoint()->GetPhysicalVolume()) return;
 
-    if( step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()!="Transportation" )
-        fEventAction->GetStepCollection().push_back(StepInfo(step));
+    // Set event filter criteria.
+    // In this application, will select transportation events where the particle leaves the surface.
+    if( step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()=="Transportation" ){
+
+        G4String preVolume = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+        G4String postVolume = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+
+        if( preVolume=="medium" && postVolume=="world" ){
+            
+            G4Track* track = step->GetTrack();
+            G4String particle = track->GetParticleDefinition()->GetParticleName();
+
+            if( particle=="gamma" || particle=="e+" || particle=="e-"){
+                fEventAction->GetStepCollection().push_back(StepInfo(step));
+                G4cout << "Detected particle crossing the boundary!\n";
+            }
+            track->SetTrackStatus( fStopAndKill );
+        }
+    }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

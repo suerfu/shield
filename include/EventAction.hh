@@ -39,6 +39,7 @@ private:
     int trackID;
     int stepID;
     int parentID;
+    int nParticle;
 
     int max_char_len;
     char particle_name[16];
