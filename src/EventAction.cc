@@ -17,6 +17,8 @@
 
 #include "TTree.h"
 
+#include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 EventAction::EventAction( RunAction* input_run_action )
@@ -36,9 +38,13 @@ EventAction::EventAction( RunAction* input_run_action )
    x(0),
    y(0),
    z(0),
+   r(0),
+   rphi(0),
    px(0),
    py(0),
    pz(0),
+   theta(0),
+   phi(0),
    global_time(0),
    tmp_particle_name(""),
    tmp_volume_name(""),
@@ -89,9 +95,13 @@ void EventAction::BeginOfEventAction(const G4Event*){
             data_tree->Branch("x", &x, "x/D");
             data_tree->Branch("y", &y, "y/D");
             data_tree->Branch("z", &z, "z/D");
+            data_tree->Branch("r", &r, "r/D");
+            data_tree->Branch("rphi", &rphi, "rphi/D");
             data_tree->Branch("px", &px, "px/D");
             data_tree->Branch("py", &py, "py/D");
             data_tree->Branch("pz", &pz, "pz/D");
+            data_tree->Branch("theta", &theta, "theta/D");
+            data_tree->Branch("phi", &phi, "phi/D");
 
             // dynamic information
             data_tree->Branch("t", &global_time, "t/D");
@@ -107,6 +117,8 @@ void EventAction::BeginOfEventAction(const G4Event*){
 
 void EventAction::EndOfEventAction(const G4Event* event){
 
+    G4double r_cutoff = 5*cm;
+
     if( data_tree!=0 ){
 
         // Print per event (modulo n)
@@ -116,8 +128,25 @@ void EventAction::EndOfEventAction(const G4Event* event){
             G4cout << "---> End of event: " << evtID << G4endl;
         }
 
+        nParticle = 0;
         for( size_t i=0; i < stepCollection.size(); ++i ){
-            nParticle = stepCollection.size();
+            position = stepCollection[i].GetPosition();
+            r = position.r();
+            if( r<r_cutoff )
+                nParticle++;
+        }
+
+        for( size_t i=0; i < stepCollection.size(); ++i ){
+            
+            position = stepCollection[i].GetPosition();
+            r = position.r();
+            if( r>r_cutoff )
+                continue;
+            rphi = position.phi();
+            x = position.x();
+            y = position.y();
+            z = position.z();
+            
             eventID = stepCollection[i].GetEventID();
             trackID = stepCollection[i].GetTrackID();
             stepID = stepCollection[i].GetStepID();
@@ -136,17 +165,15 @@ void EventAction::EndOfEventAction(const G4Event* event){
             volume_copy_number = stepCollection[i].GetVolumeCopyNumber();
             Eki = stepCollection[i].GetEki();
             Ekf = stepCollection[i].GetEkf();
+            
 
-            position = stepCollection[i].GetPosition();
             momentum = stepCollection[i].GetMomentumDirection();
-
-            x = position.x();
-            y = position.y();
-            z = position.z();
-
             px = momentum.x();
             py = momentum.y();
             pz = momentum.z();
+            theta = CLHEP::pi - momentum.theta();
+            phi = momentum.phi();
+
 
             global_time = stepCollection[i].GetGlobalTime();
 

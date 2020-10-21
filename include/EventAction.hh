@@ -61,10 +61,14 @@ private:
     double x;
     double y;
     double z;
+    double r;
+    double rphi;
 
     double px;
     double py;
     double pz;
+    double theta;
+    double phi;
 
     double global_time;
 };

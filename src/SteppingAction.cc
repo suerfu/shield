@@ -46,7 +46,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step){
 
             if( particle=="gamma" || particle=="e+" || particle=="e-"){
                 fEventAction->GetStepCollection().push_back(StepInfo(step));
-                G4cout << "Detected particle crossing the boundary!\n";
             }
             track->SetTrackStatus( fStopAndKill );
         }
