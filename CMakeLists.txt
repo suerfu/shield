@@ -53,9 +53,9 @@ target_link_libraries(veto ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 # relies on these scripts being in the current working directory.
 #
 set(VETO_SCRIPTS
-  /macros/K40.mac
-  /macros/U238.mac
-  /macros/Th232.mac
+#  /macros/K40.mac
+#  /macros/U238.mac
+#  /macros/Th232.mac
   /macros/gui.mac
   /macros/init_vis.mac
   /macros/vis.mac
