@@ -12,10 +12,17 @@
 #include "G4ThreeVector.hh"
 #include "G4VPhysicalVolume.hh"
 
+#include <string>
+
+#include "TFile.h"
+#include "TTree.h"
+
 class G4GeneralParticleSource;
 class G4ParticleGun;
 class G4Event;
 class GeneratorMessenger;
+
+using std::string;
 
 class GeneratorAction : public G4VUserPrimaryGeneratorAction {
 
@@ -25,19 +32,50 @@ public:
 
     virtual void GeneratePrimaries(G4Event* event);
 
-    //void setGeneratorDistance(G4double);
-    //void setGeneratorAngle(G4double);
+    void SetSpectrum( string str );
+        // used to specify the gamma spectrum from which to sample energy & momentum
+
+    void Sample( int n = -1 );
+
+    void SetPosition();
+        // sample and set position from the specified ROOT file.
+
+    void SetDirection();
+        // sample and set momentum direction from the specified ROOT file.
+
+    void SetDirNormal();
+        // sample and set momentum direction. with theta & phi relative to the local surface.
+        // Note: this method requires first specifying the momentum direction through macro first.
+
+    void SetEnergy();
+        // sample and set energy from the specified ROOT file.
+
 
 private:
     GeneratorMessenger* primaryGeneratorMessenger;
 
-    //G4double generator_distance;
-    //G4double generator_angle;
-    //G4String generator_mode;
+    G4ParticleGun*  fgps;
+    //G4GeneralParticleSource*  fgps;
+        // GPS is not enabled since Geant4 does not allow to set position and momentum using GPS.
 
-    //G4ParticleGun*  fParticleSource;
-    G4GeneralParticleSource*  fgps;
+    TFile* file;
+        // Pointer to the ROOT file.
 
+    TTree* tree;
+        // Pointer to the TTree object.
+
+    int nentries;
+    int index;
+    // Following variables used to read and hold sampled values from the ROOT file.
+    double x;
+    double y;
+    double z;
+    double px;
+    double py;
+    double pz;
+    double E;
+    double theta;
+    double phi;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

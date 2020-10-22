@@ -9,11 +9,15 @@
 
 #include "globals.hh"
 #include "G4UImessenger.hh"
+#include "G4UIdirectory.hh"
+#include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAString.hh"
 
 class GeneratorAction;
 class G4UIdirectory;
+
+class G4UIcmdWithoutParameter;
 class G4UIcmdWithAString;
 class G4UIcmdWithADouble;
 
@@ -32,9 +36,13 @@ private:
 
 	G4UIdirectory* primaryGeneratorDir;
 
-//	G4UIcmdWithADouble* generatorDistanceCmd;
-//	G4UIcmdWithADouble* generatorAngleCmd;
-//	G4UIcmdWithAString* generatorModeCmd;
+	G4UIcmdWithAString* cmdSetSpectrum;
+
+    G4UIcmdWithoutParameter* cmdSample;
+    G4UIcmdWithoutParameter* cmdSetPosition;
+    G4UIcmdWithoutParameter* cmdSetDir;
+    G4UIcmdWithoutParameter* cmdSetDirNormal;
+    G4UIcmdWithoutParameter* cmdSetEnergy;
 
 };
 

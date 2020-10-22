@@ -11,7 +11,7 @@
 #include "G4UIcmdWithAString.hh"
 
 DetectorConstructionMessenger::DetectorConstructionMessenger( DetectorConstruction* placement) : G4UImessenger(), detector( placement ){
-
+/*
     directory = new G4UIdirectory( "/placement/" );
     directory->SetGuidance( "Far-side/backing detector placement." );
 
@@ -49,6 +49,7 @@ DetectorConstructionMessenger::DetectorConstructionMessenger( DetectorConstructi
     place_detector = new G4UIcommand( "/placement/placeDetector", this );
     place_detector->SetGuidance( "Place a far-side detector based on the previously specified positions and angles." );
     place_detector->AvailableForStates( G4State_Idle );
+*/
 }
 
 
@@ -61,7 +62,7 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger(){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void DetectorConstructionMessenger::SetNewValue( G4UIcommand* command, G4String newValue) {
-
+/*
     if( command==posCmd ){
         detector->SetFarSidePosition( posCmd->GetNew3VectorValue( newValue ) );
     }
@@ -78,4 +79,5 @@ void DetectorConstructionMessenger::SetNewValue( G4UIcommand* command, G4String 
         detector->PlaceFarSideDetector();
     }
     return;
+*/
 }
