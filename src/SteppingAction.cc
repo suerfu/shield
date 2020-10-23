@@ -39,7 +39,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step){
         G4String preVolume = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
         G4String postVolume = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
 
-        if( preVolume=="medium" && postVolume=="world" ){
+        if( preVolume=="world" && postVolume=="frame" ){
             
             G4Track* track = step->GetTrack();
             G4String particle = track->GetParticleDefinition()->GetParticleName();
@@ -47,7 +47,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step){
             if( particle=="gamma" || particle=="e+" || particle=="e-"){
                 fEventAction->GetStepCollection().push_back(StepInfo(step));
             }
-            track->SetTrackStatus( fStopAndKill );
+            //track->SetTrackStatus( fStopAndKill );
+            track->SetTrackStatus( fKillTrackAndSecondaries );
         }
     }
 }

@@ -117,7 +117,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
     // World
     G4Box* world_solid = new G4Box( "world_solid", world_x/2.0, world_y/2.0, world_z/2.0);
     G4LogicalVolume* world_lv = new G4LogicalVolume( world_solid, world_material, "world_lv");
-    G4VPhysicalVolume* world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), world_lv, "world_pv", 0, false, 0,fCheckOverlaps);
+    G4VPhysicalVolume* world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), world_lv, "world", 0, false, 0,fCheckOverlaps);
 
 
     // Support Frame
@@ -130,7 +130,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     G4Box* frame_solid = new G4Box( "frame_solid", frame_x/2.0, frame_y/2.0, frame_z/2.0);
     G4LogicalVolume* frame_lv = new G4LogicalVolume( frame_solid, frame_material, "frame_lv");
-    new G4PVPlacement( 0, frame_offset, frame_lv, "frame_pv", world_lv, false, 0,fCheckOverlaps);
+    new G4PVPlacement( 0, frame_offset, frame_lv, "frame", world_lv, false, 0,fCheckOverlaps);
 
 
     // Lead shielding
@@ -140,7 +140,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     G4Box* Pb_solid = new G4Box( "Pb_solid", Pb_x/2.0, Pb_y/2.0, Pb_z/2.0);
     G4LogicalVolume* Pb_lv = new G4LogicalVolume( Pb_solid, Pb_material, "Pb_lv");
-    new G4PVPlacement( 0, G4ThreeVector(0,0,0), Pb_lv, "Pb_pv", frame_lv, false, 0,fCheckOverlaps);
+    new G4PVPlacement( 0, G4ThreeVector(0,0,0), Pb_lv, "Pb", frame_lv, false, 0,fCheckOverlaps);
     
 
     // Polyethylene shielding
@@ -150,7 +150,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     G4Box* PE_solid = new G4Box( "PE_solid", PE_x/2.0, PE_y/2.0, PE_z/2.0);
     G4LogicalVolume* PE_lv = new G4LogicalVolume( PE_solid, PE_material, "PE_lv");
-    new G4PVPlacement( 0, G4ThreeVector(0,0,0), PE_lv, "PE_pv", Pb_lv, false, 0,fCheckOverlaps);
+    new G4PVPlacement( 0, G4ThreeVector(0,0,0), PE_lv, "PE", Pb_lv, false, 0,fCheckOverlaps);
 
 
     // Inner copper shielding
@@ -160,7 +160,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     G4Box* Cu_solid = new G4Box( "Cu_solid", Cu_x/2.0, Cu_y/2.0, Cu_z/2.0);
     G4LogicalVolume* Cu_lv = new G4LogicalVolume( Cu_solid, Cu_material, "Cu_lv");
-    new G4PVPlacement( 0, G4ThreeVector(0,0,0), Cu_lv, "Cu_pv", PE_lv, false, 0,fCheckOverlaps);
+    new G4PVPlacement( 0, G4ThreeVector(0,0,0), Cu_lv, "Cu", PE_lv, false, 0,fCheckOverlaps);
 
 
     // Experimental chamber
@@ -170,7 +170,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     G4Box* chamber_solid = new G4Box( "chamber_solid", chamber_x/2.0, chamber_y/2.0, chamber_z/2.0);
     G4LogicalVolume* chamber_lv = new G4LogicalVolume( chamber_solid, chamber_material, "chamber_lv");
-    new G4PVPlacement( 0, G4ThreeVector(0,0,0), chamber_lv, "chamber_pv", Cu_lv, false, 0,fCheckOverlaps);
+    new G4PVPlacement( 0, G4ThreeVector(0,0,0), chamber_lv, "chamber", Cu_lv, false, 0,fCheckOverlaps);
 
 
     //===============  Visualization ===============//

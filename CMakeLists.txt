@@ -54,8 +54,8 @@ target_link_libraries(veto ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 #
 set(VETO_SCRIPTS
   /macros/wall_K40.mac
-#  /macros/U238.mac
-#  /macros/Th232.mac
+  /macros/wall_U238.mac
+  /macros/wall_Th232.mac
   /macros/gui.mac
   /macros/init_vis.mac
   /macros/vis.mac

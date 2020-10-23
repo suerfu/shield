@@ -25,6 +25,7 @@ EventAction::EventAction( RunAction* input_run_action )
  : G4UserEventAction(),
    stepCollection(),
    run_action(input_run_action),
+   data_tree(0),
    eventID(0),
    trackID(0),
    stepID(0),
@@ -38,13 +39,9 @@ EventAction::EventAction( RunAction* input_run_action )
    x(0),
    y(0),
    z(0),
-   r(0),
-   rphi(0),
    px(0),
    py(0),
    pz(0),
-   theta(0),
-   phi(0),
    global_time(0),
    tmp_particle_name(""),
    tmp_volume_name(""),
@@ -82,7 +79,7 @@ void EventAction::BeginOfEventAction(const G4Event*){
             // information about its order in the event/run sequence
             data_tree->Branch("eventID", &eventID, "eventID/I");
             data_tree->Branch("trackID", &trackID, "trackID/I");
-            data_tree->Branch("stepID", &stepID, "stepID/I");
+            //data_tree->Branch("stepID", &stepID, "stepID/I");
             data_tree->Branch("nParticle", &nParticle, "nParticle/I");
 
             // information about its idenity
@@ -91,23 +88,19 @@ void EventAction::BeginOfEventAction(const G4Event*){
 
             // geometric information
             data_tree->Branch("volume", volume_name, "volume[16]/C");
-            data_tree->Branch("copy_n", &volume_copy_number, "copy_n/I");
+            //data_tree->Branch("copy_n", &volume_copy_number, "copy_n/I");
             data_tree->Branch("x", &x, "x/D");
             data_tree->Branch("y", &y, "y/D");
             data_tree->Branch("z", &z, "z/D");
-            data_tree->Branch("r", &r, "r/D");
-            data_tree->Branch("rphi", &rphi, "rphi/D");
             data_tree->Branch("px", &px, "px/D");
             data_tree->Branch("py", &py, "py/D");
             data_tree->Branch("pz", &pz, "pz/D");
-            data_tree->Branch("theta", &theta, "theta/D");
-            data_tree->Branch("phi", &phi, "phi/D");
 
             // dynamic information
             data_tree->Branch("t", &global_time, "t/D");
             data_tree->Branch("Eki", &Eki, "Eki/D"); // initial kinetic energy before the step
             data_tree->Branch("Ekf", &Ekf, "Ekf/D"); // final kinetic energy after the step
-            data_tree->Branch("Edep", &edep, "Edep/D"); // energy deposit calculated by Geant4
+            //data_tree->Branch("Edep", &edep, "Edep/D"); // energy deposit calculated by Geant4
             data_tree->Branch("process", process_name, "process[16]/C");
         }
     }
@@ -117,35 +110,20 @@ void EventAction::BeginOfEventAction(const G4Event*){
 
 void EventAction::EndOfEventAction(const G4Event* event){
 
-    G4double r_cutoff = 5*cm;
+
+    // Print per event (modulo n)
+    G4int evtID = event->GetEventID();
+    G4int printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
+    if ( ( printModulo > 0 ) && ( evtID % printModulo == 0 ) ) {
+        G4cout << "---> End of event: " << evtID << G4endl;
+    }
 
     if( data_tree!=0 ){
 
-        // Print per event (modulo n)
-        G4int evtID = event->GetEventID();
-        G4int printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
-        if ( ( printModulo > 0 ) && ( evtID % printModulo == 0 ) ) {
-            G4cout << "---> End of event: " << evtID << G4endl;
-        }
-
-        nParticle = 0;
-        for( size_t i=0; i < stepCollection.size(); ++i ){
-            position = stepCollection[i].GetPosition();
-            r = position.r();
-            if( r<r_cutoff )
-                nParticle++;
-        }
+        nParticle = stepCollection.size();
 
         for( size_t i=0; i < stepCollection.size(); ++i ){
             
-            position = stepCollection[i].GetPosition();
-            r = position.r();
-            if( r>r_cutoff )
-                continue;
-            rphi = position.phi();
-            x = position.x();
-            y = position.y();
-            z = position.z();
             
             eventID = stepCollection[i].GetEventID();
             trackID = stepCollection[i].GetTrackID();
@@ -166,14 +144,15 @@ void EventAction::EndOfEventAction(const G4Event* event){
             Eki = stepCollection[i].GetEki();
             Ekf = stepCollection[i].GetEkf();
             
+            position = stepCollection[i].GetPosition();
+            x = position.x();
+            y = position.y();
+            z = position.z();
 
             momentum = stepCollection[i].GetMomentumDirection();
             px = momentum.x();
             py = momentum.y();
             pz = momentum.z();
-            theta = CLHEP::pi - momentum.theta();
-            phi = momentum.phi();
-
 
             global_time = stepCollection[i].GetGlobalTime();
 

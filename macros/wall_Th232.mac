@@ -1,7 +1,7 @@
 /run/initialize
 /tracking/verbose 0
 
-/generator/spectrum ../rock_K40.root
+/generator/spectrum ../rock_Th232.root
 /generator/confineOnWall
 
 #/gun/particle gamma
