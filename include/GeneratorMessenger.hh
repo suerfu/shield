@@ -21,8 +21,8 @@ class G4UIcmdWithoutParameter;
 class G4UIcmdWithAString;
 class G4UIcmdWithADouble;
 
-class GeneratorMessenger : public G4UImessenger
-{
+class GeneratorMessenger : public G4UImessenger {
+
 public:
 
 	GeneratorMessenger(GeneratorAction*);
@@ -41,8 +41,8 @@ private:
     G4UIcmdWithoutParameter* cmdSample;
     G4UIcmdWithoutParameter* cmdSetPosition;
     G4UIcmdWithoutParameter* cmdSetDir;
-    G4UIcmdWithoutParameter* cmdSetDirNormal;
     G4UIcmdWithoutParameter* cmdSetEnergy;
+    G4UIcmdWithoutParameter* cmdSetWall;
 
 };
 

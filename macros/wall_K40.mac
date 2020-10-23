@@ -1,0 +1,9 @@
+/run/initialize
+/tracking/verbose 0
+
+/generator/spectrum ../rock_K40_run1.root
+/generator/confineOnWall
+
+/gun/particle gamma
+
+#/run/beamOn 100

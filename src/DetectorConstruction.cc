@@ -175,7 +175,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     //===============  Visualization ===============//
 
-    world_lv->SetVisAttributes( G4VisAttributes::Invisible );
+    //world_lv->SetVisAttributes( G4VisAttributes::Invisible );
 
     frame_lv->SetVisAttributes( G4VisAttributes(G4Colour( 0, 0, 1, 0.5)) );
     Pb_lv->SetVisAttributes( G4VisAttributes(G4Colour( 0.5, 0.5, 0.5, 0.5)) );

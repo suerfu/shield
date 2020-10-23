@@ -17,7 +17,7 @@
 #include "G4RandomDirection.hh"
 #include "G4IonTable.hh"
 
-
+#include <cmath>
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
@@ -32,6 +32,15 @@ GeneratorAction::GeneratorAction() : G4VUserPrimaryGeneratorAction() {
     index = 0;
 
     primaryGeneratorMessenger = new GeneratorMessenger(this);
+
+    onwall = false;
+    sample = false;
+
+    wall_x = 11*m;
+    wall_y = 12*m;
+    wall_z = 3.2*m;
+
+    world = 0;
 }
 
 
@@ -43,12 +52,15 @@ GeneratorAction::~GeneratorAction(){
     }
 
     delete primaryGeneratorMessenger;
+    delete world;
 }
 
 
 void GeneratorAction::SetSpectrum( string str ){
 
-    if( file->IsOpen() ){
+    G4cout << "Setting spectrum to " << str << G4endl;
+
+    if( file!=0 && file->IsOpen() ){
         file->Close();
     }
 
@@ -65,6 +77,8 @@ void GeneratorAction::SetSpectrum( string str ){
 
     if( tree!=0 ){
         nentries = tree->GetEntries();
+        tree->SetBranchAddress( "particle", &particle );
+        tree->SetBranchAddress( "nParticle", &nparticle );
         tree->SetBranchAddress( "x", &x );
         tree->SetBranchAddress( "y", &y );
         tree->SetBranchAddress( "z", &z );
@@ -77,6 +91,7 @@ void GeneratorAction::SetSpectrum( string str ){
         if( tree->GetListOfBranches()->FindObject("theta") )
             tree->SetBranchAddress( "phi", &phi );            
     }
+    sample = true;
 }
 
 
@@ -84,9 +99,6 @@ void GeneratorAction::Sample( int n ){
     if( n>0 && tree!=0 ){
         index = n;
     }
-
-    tree->GetEntry( index%nentries );
-    index++;
 }
 
 
@@ -105,19 +117,63 @@ void GeneratorAction::SetEnergy(){
 }
 
 
-void GeneratorAction::SetDirNormal(){
+void GeneratorAction::ConfineOnWall(){
     
-    G4ThreeVector original = fgps->GetParticleMomentumDirection( );
-
-    G4ThreeVector rotate1 = original.orthogonal();
-    G4ThreeVector rotate2 = original;
-    original.rotate( theta, rotate1);
-    original.rotate( phi, rotate2);
-
-    fgps->SetParticleMomentumDirection( original );
+    if( world==0 ){
+        world = new G4Box( "world", wall_x/2, wall_y/2, wall_z/2);
+    } 
+    onwall = true;
 }
 
 
 void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
-    fgps->GeneratePrimaryVertex(anEvent);
+
+    if( sample==true ){
+        tree->GetEntry( index%nentries );
+        int counter = 0;
+        do{
+            fgps->SetParticleDefinition( G4ParticleTable::GetParticleTable()->FindParticle( particle ) );
+            // If particles to be generated on the world wall, confine to wall and generate theta/phi w.r.t. normal.
+            if( onwall ==true ){
+                // Set particle position
+                G4ThreeVector pos = world->GetPointOnSurface();
+                fgps->SetParticlePosition( pos );
+
+                // Set particle momentum direction
+                G4ThreeVector original = -world->SurfaceNormal( pos );
+
+                G4ThreeVector rotate1 = original.orthogonal().unit();
+                    // A vector perpendicular to normal. Rotation w.r.t. this axis generates the polar angle.
+                G4ThreeVector rotate2 = original.unit();
+                    // This is the original normal direction. Phi rotation will be w.r.t. this axis.
+                original.rotate( theta, rotate1/rotate1.mag() );
+                original.rotate( phi, rotate2/rotate2.mag() );
+
+                fgps->SetParticleMomentumDirection( original );
+            }
+            else{
+                fgps->SetParticlePosition( G4ThreeVector(x,y,z) );
+                fgps->SetParticleMomentumDirection( G4ThreeVector(px,py,pz) );
+            }
+
+            fgps->SetParticleEnergy( E );
+        
+            fgps->GeneratePrimaryVertex(anEvent);
+
+            if( nparticle>1){
+                index++;
+                tree->GetEntry( index%nentries );
+            }
+            else{
+                break;
+            }
+            counter++;
+        }while( counter<nparticle);
+
+        index++;
+    }
+    else{
+        fgps->GeneratePrimaryVertex(anEvent);
+    }
+
 }
