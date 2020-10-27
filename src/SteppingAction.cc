@@ -39,7 +39,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step){
         G4String preVolume = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
         G4String postVolume = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
 
-        if( preVolume=="world" && postVolume=="frame" ){
+        if( preVolume=="frame" && postVolume=="Pb" ){
             
             G4Track* track = step->GetTrack();
             G4String particle = track->GetParticleDefinition()->GetParticleName();
