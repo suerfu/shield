@@ -1,0 +1,10 @@
+/run/initialize
+/tracking/verbose 0
+
+/generator/spectrum /global/home/users/suerfu/data/veto/frame/frame_Th232.root
+#/generator/confineOnWall
+
+#/gun/particle gamma
+
+/run/printProgress 1000000
+/run/beamOn 1000000000
