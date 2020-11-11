@@ -34,12 +34,12 @@ void SteppingAction::UserSteppingAction(const G4Step* step){
 
     // Set event filter criteria.
     // In this application, will select transportation events where the particle leaves the surface.
-    if( step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()=="Transportation" ){
+//    if( step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()=="Transportation" ){
 
         G4String preVolume = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
         G4String postVolume = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
 
-        if( preVolume=="Cu" && postVolume=="chamber" ){
+        if( preVolume=="chamber" && postVolume=="chamber" ){
             
             G4Track* track = step->GetTrack();
             G4String particle = track->GetParticleDefinition()->GetParticleName();
@@ -48,8 +48,9 @@ void SteppingAction::UserSteppingAction(const G4Step* step){
                 fEventAction->GetStepCollection().push_back(StepInfo(step));
             }
             //track->SetTrackStatus( fStopAndKill );
-            track->SetTrackStatus( fKillTrackAndSecondaries );
-        }
+            //track->SetTrackStatus( fKillTrackAndSecondaries );
+                // This is not needed for summing energy deposits.
+//        }
     }
 }
 
