@@ -100,7 +100,7 @@ void EventAction::BeginOfEventAction(const G4Event*){
             data_tree->Branch("t", &global_time, "t/D");
             data_tree->Branch("Eki", &Eki, "Eki/D"); // initial kinetic energy before the step
             data_tree->Branch("Ekf", &Ekf, "Ekf/D"); // final kinetic energy after the step
-            data_tree->Branch("Edep", &edep, "Edep/D"); // energy deposit calculated by Geant4
+            //data_tree->Branch("Edep", &edep, "Edep/D"); // energy deposit calculated by Geant4
             data_tree->Branch("process", process_name, "process[16]/C");
         }
     }
@@ -115,21 +115,20 @@ void EventAction::EndOfEventAction(const G4Event* event){
     G4int evtID = event->GetEventID();
     G4int printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
     if ( ( printModulo > 0 ) && ( evtID % printModulo == 0 ) ) {
-        G4cout << "--> End of event: " << evtID << G4endl;
+        G4cout << "---> End of event: " << evtID << G4endl;
     }
 
     if( data_tree!=0 ){
 
         nParticle = stepCollection.size();
 
-        edep = 0;
-
         for( size_t i=0; i < stepCollection.size(); ++i ){
-                
+            
+            
             eventID = stepCollection[i].GetEventID();
             trackID = stepCollection[i].GetTrackID();
             stepID = stepCollection[i].GetStepID();
-            edep += stepCollection[i].GetDepositedEnergy();
+            edep = stepCollection[i].GetDepositedEnergy();
 
             parentID = stepCollection[i].GetParentID();
 
@@ -156,9 +155,9 @@ void EventAction::EndOfEventAction(const G4Event* event){
             pz = momentum.z();
 
             global_time = stepCollection[i].GetGlobalTime();
-        }
 
-        data_tree->Fill();
+            data_tree->Fill();
+        }
     }
 
     stepCollection.clear();

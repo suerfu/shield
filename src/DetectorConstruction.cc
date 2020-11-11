@@ -62,8 +62,8 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
 
     // Copper shielding
     shielding_Cu = 6*cm;
-    shielding_PE = 20*cm;
-    shielding_Pb = 30*cm;
+    shielding_PE = 30*cm;
+    shielding_Pb = 20*cm;
     shielding_SF = 5*cm;
 
 }
