@@ -43,17 +43,20 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
 
     offset = 5*cm;
 
-    list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL", 152*cm, 2) );
-    list.push_back( ShieldInfo("Pb1",    "G4_Pb", 142*cm, 4) );
-    list.push_back( ShieldInfo("Pb2",    "G4_Pb", 132*cm, 8) );
-    list.push_back( ShieldInfo("Pb3",    "G4_Pb", 122*cm, 16) );
-    list.push_back( ShieldInfo("Pb4",    "G4_Pb", 112*cm, 32) );
-    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 102*cm, 32) );
-    list.push_back( ShieldInfo("Cu",    "G4_Cu", 42*cm, 32) );
+    list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL", 152*cm, 1) );
+    list.push_back( ShieldInfo("Pb1",    "G4_Pb", 142*cm, 2) );
+    list.push_back( ShieldInfo("Pb2",    "G4_Pb", 137*cm, 4) );
+    list.push_back( ShieldInfo("Pb3",    "G4_Pb", 132*cm, 8) );
+    list.push_back( ShieldInfo("Pb4",    "G4_Pb", 127*cm, 16) );
+    list.push_back( ShieldInfo("Pb5",    "G4_Pb", 122*cm, 32) );
+    list.push_back( ShieldInfo("Pb6",    "G4_Pb", 117*cm, 64) );
+    list.push_back( ShieldInfo("Pb7",    "G4_Pb", 112*cm, 128) );
+    list.push_back( ShieldInfo("Pb8",    "G4_Pb", 107*cm, 256) );
+    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 102*cm, 256) );
+    list.push_back( ShieldInfo("Cu1",    "G4_Cu", 42*cm, 256) );
+    list.push_back( ShieldInfo("Cu2",    "G4_Cu", 36*cm, 512) );
+    list.push_back( ShieldInfo("chamber",    "liquid_helium", 30*cm, 512) );
 
-//    list.push_back( ShieldInfo("Pb",    "G4_Pb", 150*cm, 1) );
-//    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 148*cm, 1) );
-//    list.push_back( ShieldInfo("Cu",    "G4_Cu", 42*cm, 1) );
 }
 
 

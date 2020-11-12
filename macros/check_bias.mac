@@ -5,7 +5,7 @@
 /gun/particle gamma
 /gun/energy 1.5 MeV
 
-/gun/position 100 0 -100 cm
+/gun/position 0 0 -120 cm
 /gun/direction -1 0 0
 
-/run/beamOn 1
+/run/beamOn 100
