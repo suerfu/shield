@@ -22,24 +22,22 @@ public:
     virtual void BeginOfEventAction(const G4Event* event);
     virtual void EndOfEventAction(const G4Event* event);
 
+    void PrintEventStatistics() const;
+    
     vector<StepInfo>& GetStepCollection();
 
 private:
-     
+    
     RunAction* run_action;
+     
+    vector<StepInfo> stepCollection;
     
     TTree* data_tree;
-    
-    // methods
-    void PrintEventStatistics() const;
-
-    vector<StepInfo> stepCollection;
 
     int eventID;
     int trackID;
     int stepID;
     int parentID;
-    int nParticle;
 
     int max_char_len;
     char particle_name[16];
@@ -49,27 +47,25 @@ private:
     G4String tmp_particle_name;
     G4String tmp_volume_name;
     G4String tmp_process_name;
-
-    int volume_copy_number;
-    double Eki;
-    double Ekf;
-    double edep;
-
+    
     G4ThreeVector position;
-    G4ThreeVector momentum;
-
     double x;
     double y;
     double z;
     double r;
     double rphi;
 
+    G4ThreeVector momentum;
     double px;
     double py;
     double pz;
     double theta;
     double phi;
 
+    double Eki;
+    double Ekf;
+    double edep;
+    
     double global_time;
 };
 

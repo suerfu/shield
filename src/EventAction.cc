@@ -23,28 +23,28 @@
 
 EventAction::EventAction( RunAction* input_run_action )
  : G4UserEventAction(),
-   stepCollection(),
    run_action(input_run_action),
+   stepCollection(),
    data_tree(0),
    eventID(0),
    trackID(0),
    stepID(0),
    parentID(0),
-   Eki(0),
-   Ekf(0),
-   edep(0),
+   tmp_particle_name(""),
+   tmp_volume_name(""),
+   tmp_process_name(""),
    position(0),
-   momentum(0),
    x(0),
    y(0),
    z(0),
+   momentum(0),
    px(0),
    py(0),
    pz(0),
-   global_time(0),
-   tmp_particle_name(""),
-   tmp_volume_name(""),
-   tmp_process_name("")
+   Eki(0),
+   Ekf(0),
+   edep(0),
+   global_time(0)
 {
     max_char_len = 15;
 }
@@ -79,7 +79,6 @@ void EventAction::BeginOfEventAction(const G4Event*){
             data_tree->Branch("eventID", &eventID, "eventID/I");
             data_tree->Branch("trackID", &trackID, "trackID/I");
             data_tree->Branch("stepID", &stepID, "stepID/I");
-            data_tree->Branch("nParticle", &nParticle, "nParticle/I");
 
             // information about its idenity
             data_tree->Branch("particle", particle_name, "particle[16]/C");
@@ -127,7 +126,7 @@ void EventAction::EndOfEventAction(const G4Event* event){
             }
         }
 
-        if( record ){
+        if( record==true ){
 
             for( size_t i=0; i < stepCollection.size(); ++i ){
             
