@@ -161,6 +161,9 @@ int main(int argc,char** argv){
     runManager->SetUserAction( new TrackingAction( eventAction ) );
     runManager->SetUserAction( new SteppingAction( detConstruction, eventAction ) );
 
+    runManager->Initialize();
+    detConstruction->CreateImportanceStore();
+
     G4VisManager* visManager = new G4VisExecutive;
 
 

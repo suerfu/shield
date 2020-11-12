@@ -1,0 +1,11 @@
+#/run/initialize
+/tracking/verbose 1
+
+
+/gun/particle gamma
+/gun/energy 1.5 MeV
+
+/gun/position 100 0 -100 cm
+/gun/direction -1 0 0
+
+/run/beamOn 1
