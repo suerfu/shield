@@ -25,6 +25,7 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 
+#include <sstream>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -44,19 +45,12 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
     offset = 5*cm;
 
     list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL", 152*cm, 1) );
-    list.push_back( ShieldInfo("Pb1",    "G4_Pb", 142*cm, 2) );
-    list.push_back( ShieldInfo("Pb2",    "G4_Pb", 137*cm, 4) );
-    list.push_back( ShieldInfo("Pb3",    "G4_Pb", 132*cm, 8) );
-    list.push_back( ShieldInfo("Pb4",    "G4_Pb", 127*cm, 16) );
-    list.push_back( ShieldInfo("Pb5",    "G4_Pb", 122*cm, 32) );
-    list.push_back( ShieldInfo("Pb6",    "G4_Pb", 117*cm, 64) );
-    list.push_back( ShieldInfo("Pb7",    "G4_Pb", 112*cm, 128) );
-    list.push_back( ShieldInfo("Pb8",    "G4_Pb", 107*cm, 256) );
-    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 102*cm, 256) );
-    list.push_back( ShieldInfo("Cu1",    "G4_Cu", 42*cm, 256) );
-    list.push_back( ShieldInfo("Cu2",    "G4_Cu", 36*cm, 512) );
-    list.push_back( ShieldInfo("chamber",    "liquid_helium", 30*cm, 512) );
+    list.push_back( ShieldInfo("Pb",    "G4_Pb", 142*cm, 2, 10) );
+    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 102*cm, 1) );
+    list.push_back( ShieldInfo("Cu",    "G4_Cu", 42*cm, 2, 3) );
+    list.push_back( ShieldInfo("chamber",    "liquid_helium", 30*cm, 1) );
 
+    list = ExpandList( list );
 }
 
 
@@ -85,15 +79,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
     //===============  Materials ===============//
 
     G4NistManager* mat_man = G4NistManager::Instance(); //material mananger
-
     G4Material* world_material = mat_man->FindOrBuildMaterial("G4_Galactic");
-    G4Material* frame_material = mat_man->FindOrBuildMaterial("G4_STAINLESS-STEEL");
-
-    G4Material* Pb_material = mat_man->FindOrBuildMaterial("G4_Pb");
-    G4Material* PE_material = mat_man->FindOrBuildMaterial("G4_POLYETHYLENE");
-    G4Material* Cu_material = mat_man->FindOrBuildMaterial("G4_Cu");
-    G4Material* chamber_material = G4Material::GetMaterial("liquid_helium");
-
     
     //===============  Build Geometry ===============//
 
@@ -108,8 +94,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
     // The outermost layer is not created, but instead the logical volume is returned.
 
     G4LogicalVolume* parent_log = 0;
+
     for( unsigned int i=0; i<list.size(); i++ ){
-        G4cout << "Constructing " << list[i].name << " shielding...\n";
+        G4cout << "Constructing " << list[i].name << " shielding with importance " << list[i].bias << G4endl;
         
         G4Box* solid = new G4Box( list[i].name+"_solid", list[i].dim/2.0, list[i].dim/2.0, list[i].dim/2.0);
 
@@ -170,4 +157,53 @@ G4VIStore* DetectorConstruction::CreateImportanceStore(){
     }
     
     return istore;
+}
+
+
+std::vector<ShieldInfo> DetectorConstruction::ExpandList( std::vector<ShieldInfo> tmp ){
+
+    std::vector<ShieldInfo> rlist;
+
+    // Go through the vector and identify all layers.
+    // Last element is the center of the chamber, there cannot be layers.
+    // If nlayer is 1, simply add.
+    // If >1, get the next layer's dimension and generate the intermediate ones
+    
+    G4int bias = 1;
+
+    for( unsigned int i=0; i<tmp.size(); i++){
+
+        G4int nlayer = tmp[i].nlayer;
+
+        if( nlayer<2 || i==tmp.size()-1 ){
+            bias *= tmp[i].bias;
+            tmp[i].bias = bias;
+            rlist.push_back( tmp[i] );
+        }
+        else{
+            G4double delta = (tmp[i+1].dim-tmp[i].dim)/nlayer;
+                // incremental dimension for sublayers.
+
+            for( int j=0; j<nlayer; j++ ){
+
+                ShieldInfo sub( tmp[i] );
+                    // Current parent layer as a start.
+
+                sub.dim += j*delta;
+                
+                std::stringstream suffix;
+                suffix << "_" << j;
+                sub.name += suffix.str();
+
+                bias *= tmp[i].bias;
+                sub.bias = bias;
+                
+                sub.nlayer = 1;
+                rlist.push_back( sub );
+            }
+        }
+    }
+
+
+    return rlist;
 }

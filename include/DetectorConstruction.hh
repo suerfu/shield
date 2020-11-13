@@ -33,6 +33,8 @@ public:
     virtual G4VPhysicalVolume* Construct();
         // This method calls DefineMaterials and DefineVolumes successively.
 
+    G4VPhysicalVolume* GetWorldPhysical(){ return world_pv; }
+
     G4Material* FindMaterial(G4String);
 
     G4VIStore* CreateImportanceStore();
@@ -64,19 +66,22 @@ private:
     // Experimental chamber
     std::vector<ShieldInfo> list;
 
+    std::vector<ShieldInfo> ExpandList( std::vector<ShieldInfo> tmp );
+
 };
 
 
 
 struct ShieldInfo{
 
-    ShieldInfo( G4String n, G4String m, G4double l, G4int b):
-        name(n), material(m), dim(l), bias(b){}
+    ShieldInfo( G4String n, G4String m, G4double l, G4int b=1, G4int layer=1 ):
+        name(n), material(m), dim(l), bias(b), nlayer(layer){}
 
     G4String name;
     G4String material;
     G4double dim;
     G4int    bias;
+    G4int    nlayer;
     G4LogicalVolume* log;
     G4VPhysicalVolume* phy;
 };

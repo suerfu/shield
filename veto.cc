@@ -2,25 +2,28 @@
 /// \file veto.cc
 /// \brief Program used to study the shielding and veto efficiencies of different materials and geometries.
 
+#include "G4RunManager.hh"
+
 #include "DetectorConstruction.hh"
 #include "GeneratorAction.hh"
+
+#include "Shielding.hh"
 
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "TrackingAction.hh"
 #include "SteppingAction.hh"
 
-#include "G4RunManager.hh"
-
 #include "G4UImanager.hh"
 #include "G4UIcommand.hh"
-#include "Shielding.hh"
 
-#include "Randomize.hh"
+#include "G4ImportanceBiasing.hh"
+#include "G4GeometrySampler.hh"
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
 
+#include "Randomize.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -128,10 +131,14 @@ int main(int argc,char** argv){
     // Construct detector geometry
     DetectorConstruction* detConstruction = new DetectorConstruction();
     runManager->SetUserInitialization( detConstruction );
-  
     
     // Physics list. Use a ready-to-use list.
     G4VModularPhysicsList* physicsList = new Shielding;
+
+    // Configure Biasing
+    G4GeometrySampler geom_sampler(detConstruction->GetWorldPhysical(),"gamma");
+    physicsList->RegisterPhysics( new G4ImportanceBiasing(&geom_sampler) );
+
     runManager->SetUserInitialization( physicsList );
   
     // avoid using ActionInitialization for now
