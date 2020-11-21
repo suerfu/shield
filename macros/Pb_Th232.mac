@@ -1,7 +1,7 @@
 /run/initialize
 /tracking/verbose 0
 
-/generator/spectrum /global/home/users/suerfu/data/veto/frame/frame_Th232.root
+/generator/spectrum /global/home/users/suerfu/data/tesseract_shielding/run1/frame/frame_Th232.root
 #/generator/confineOnWall
 
 #/gun/particle gamma

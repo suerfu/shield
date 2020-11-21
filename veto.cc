@@ -136,8 +136,12 @@ int main(int argc,char** argv){
     G4VModularPhysicsList* physicsList = new Shielding;
 
     // Configure Biasing
-    G4GeometrySampler geom_sampler(detConstruction->GetWorldPhysical(),"gamma");
-    physicsList->RegisterPhysics( new G4ImportanceBiasing(&geom_sampler) );
+    G4GeometrySampler geom_sampler_gamma(detConstruction->GetWorldPhysical(),"gamma");
+    physicsList->RegisterPhysics( new G4ImportanceBiasing(&geom_sampler_gamma) );
+    G4GeometrySampler geom_sampler_e(detConstruction->GetWorldPhysical(),"e-");
+    physicsList->RegisterPhysics( new G4ImportanceBiasing(&geom_sampler_e) );
+    G4GeometrySampler geom_sampler_ep(detConstruction->GetWorldPhysical(),"e+");
+    physicsList->RegisterPhysics( new G4ImportanceBiasing(&geom_sampler_ep) );
 
     runManager->SetUserInitialization( physicsList );
   
