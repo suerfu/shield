@@ -23,9 +23,8 @@
 
 GeneratorAction::GeneratorAction() : G4VUserPrimaryGeneratorAction() {
     
-    fgps = new G4ParticleGun();
-    //GeneralParticleSource();
-        // GPS must be initialized here.
+    fgun = new G4ParticleGun();
+    fgps = new G4GeneralParticleSource();
     
     file = 0;
     tree = 0;
@@ -59,6 +58,7 @@ GeneratorAction::~GeneratorAction(){
 void GeneratorAction::SetSpectrum( string str ){
 
     G4cout << "Setting spectrum to " << str << G4endl;
+
 
     if( file!=0 && file->IsOpen() ){
         file->Close();
@@ -103,17 +103,17 @@ void GeneratorAction::Sample( int n ){
 
 
 void GeneratorAction::SetPosition(){
-    fgps->SetParticlePosition( G4ThreeVector(x,y,z) );
+    fgun->SetParticlePosition( G4ThreeVector(x,y,z) );
 }
 
 
 void GeneratorAction::SetDirection(){
-    fgps->SetParticleMomentumDirection( G4ThreeVector(px,py,pz) );
+    fgun->SetParticleMomentumDirection( G4ThreeVector(px,py,pz) );
 }
 
 
 void GeneratorAction::SetEnergy(){
-    fgps->SetParticleEnergy( E );
+    fgun->SetParticleEnergy( E );
 }
 
 
@@ -132,12 +132,12 @@ void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
         tree->GetEntry( index%nentries );
         int counter = 0;
         do{
-            fgps->SetParticleDefinition( G4ParticleTable::GetParticleTable()->FindParticle( particle ) );
+            fgun->SetParticleDefinition( G4ParticleTable::GetParticleTable()->FindParticle( particle ) );
             // If particles to be generated on the world wall, confine to wall and generate theta/phi w.r.t. normal.
             if( onwall ==true ){
                 // Set particle position
                 G4ThreeVector pos = world->GetPointOnSurface();
-                fgps->SetParticlePosition( pos );
+                fgun->SetParticlePosition( pos );
 
                 // Set particle momentum direction
                 G4ThreeVector original = -world->SurfaceNormal( pos );
@@ -149,16 +149,16 @@ void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
                 original.rotate( theta, rotate1/rotate1.mag() );
                 original.rotate( phi, rotate2/rotate2.mag() );
 
-                fgps->SetParticleMomentumDirection( original );
+                fgun->SetParticleMomentumDirection( original );
             }
             else{
-                fgps->SetParticlePosition( G4ThreeVector(x,y,z) );
-                fgps->SetParticleMomentumDirection( G4ThreeVector(px,py,pz) );
+                fgun->SetParticlePosition( G4ThreeVector(x,y,z) );
+                fgun->SetParticleMomentumDirection( G4ThreeVector(px,py,pz) );
             }
 
-            fgps->SetParticleEnergy( E );
+            fgun->SetParticleEnergy( E );
         
-            fgps->GeneratePrimaryVertex(anEvent);
+            fgun->GeneratePrimaryVertex(anEvent);
 
             if( nparticle>1){
                 index++;
@@ -175,5 +175,4 @@ void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
     else{
         fgps->GeneratePrimaryVertex(anEvent);
     }
-
 }

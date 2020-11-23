@@ -45,9 +45,9 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
     offset = 5*cm;
 
     list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL", 152*cm, 1) );
-    list.push_back( ShieldInfo("Pb",    "G4_Pb", 142*cm, 2, 1) );
+    list.push_back( ShieldInfo("Pb",    "G4_Pb", 142*cm, 1, 1) );
     list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 102*cm, 1) );
-    list.push_back( ShieldInfo("Cu",    "G4_Cu", 42*cm, 2, 1) );
+    list.push_back( ShieldInfo("Cu",    "G4_Cu", 42*cm, 1, 1) );
     list.push_back( ShieldInfo("chamber",    "liquid_helium", 30*cm, 1) );
 
     list = ExpandList( list );

@@ -1,0 +1,19 @@
+/run/initialize
+/tracking/verbose 0
+
+/gps/particle   ion
+/gps/ion 92 238
+/gps/energy 0 keV
+
+/gps/pos/type Volume
+/gps/pos/shape Para
+/gps/pos/centre 0 0 -790 mm  
+/gps/pos/halfx  25 cm
+/gps/pos/halfy  25 cm
+/gps/pos/halfz  25 cm
+/gps/pos/confine Cu
+
+/gps/ang/type iso 
+
+/run/printProgress 1000000
+/run/beamOn 3000000

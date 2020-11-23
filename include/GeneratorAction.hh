@@ -9,9 +9,10 @@
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
-#include "G4ThreeVector.hh"
-#include "G4VPhysicalVolume.hh"
+//#include "G4ThreeVector.hh"
+//#include "G4VPhysicalVolume.hh"
 #include "G4Box.hh"
+#include "G4GeneralParticleSource.hh"
 
 #include <string>
 
@@ -55,9 +56,10 @@ public:
 private:
     GeneratorMessenger* primaryGeneratorMessenger;
 
-    G4ParticleGun*  fgps;
-    //G4GeneralParticleSource*  fgps;
-        // GPS is not enabled since Geant4 does not allow to set position and momentum using GPS.
+    G4ParticleGun*  fgun;
+    G4GeneralParticleSource*  fgps;
+
+    bool use_gps;
 
     TFile* file;
         // Pointer to the ROOT file.

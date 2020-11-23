@@ -60,6 +60,10 @@ set(VETO_SCRIPTS
   /macros/init_vis.mac
   /macros/vis.mac
   /macros/icons.mac
+  /macros/test_geometry.mac
+  /macros/impurity_Cu_K40.mac
+  /macros/impurity_Cu_U238.mac
+  /macros/impurity_Cu_Th232.mac
   )
 
 foreach(_script ${VETO_SCRIPTS})
