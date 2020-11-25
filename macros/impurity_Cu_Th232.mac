@@ -15,5 +15,5 @@
 
 /gps/ang/type iso 
 
-/run/printProgress 1000000
+/run/printProgress 100000
 /run/beamOn 3000000
