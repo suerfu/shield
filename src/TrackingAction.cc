@@ -25,7 +25,9 @@ TrackingAction::TrackingAction(EventAction* eventAction)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void TrackingAction::PreUserTrackingAction(const G4Track* track){
-    
+
+    G4String procName = "initStep";
+
     // We have to set up the initStep by hand
     StepInfo stepInfo;
 
@@ -41,7 +43,7 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track){
     stepInfo.SetPosition(track->GetPosition());
     stepInfo.SetMomentumDirection(track->GetMomentumDirection());
     stepInfo.SetGlobalTime(track->GetGlobalTime());
-    stepInfo.SetProcessName("initStep");
+    stepInfo.SetProcessName( procName );
 
     fEventAction->GetStepCollection().push_back(stepInfo);
 }

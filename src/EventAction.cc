@@ -101,6 +101,10 @@ void EventAction::BeginOfEventAction(const G4Event*){
             data_tree->Branch("process", process_name, "process[16]/C");
         }
     }
+
+    StepInfo stepinfo;
+    stepinfo.SetProcessName( "newEvent" );
+    GetStepCollection().push_back(stepinfo);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -117,8 +121,9 @@ void EventAction::EndOfEventAction(const G4Event* event){
 
     if( data_tree!=0 ){
 
-        bool record = false;
-        
+        // Filter for event recording. 
+        // For different application, this should be changed.
+        bool record = false;        
         for( size_t i=0; i < stepCollection.size(); ++i ){
             if( stepCollection[i].GetVolumeName()=="chamber" ){
                 record = true;
@@ -128,17 +133,29 @@ void EventAction::EndOfEventAction(const G4Event* event){
 
         if( record==true ){
 
+            bool NewEvtMarker = false;
+            G4String EventType = "";
+
             for( size_t i=0; i < stepCollection.size(); ++i ){
             
-                eventID = stepCollection[i].GetEventID();
-                trackID = stepCollection[i].GetTrackID();
-                stepID = stepCollection[i].GetStepID();
-
-                parentID = stepCollection[i].GetParentID();
+                tmp_process_name = stepCollection[i].GetProcessName();
+                if( tmp_process_name=="newEvent" || tmp_process_name=="timeReset"){
+                    EventType = tmp_process_name;
+                    NewEvtMarker = true;
+                    continue;
+                }
+                if( NewEvtMarker==true ){
+                    tmp_process_name = EventType;
+                    NewEvtMarker = false;
+                }
 
                 tmp_particle_name = stepCollection[i].GetParticleName();
                 tmp_volume_name = stepCollection[i].GetVolumeName();
-                tmp_process_name = stepCollection[i].GetProcessName();
+
+                eventID = stepCollection[i].GetEventID();
+                trackID = stepCollection[i].GetTrackID();
+                stepID = stepCollection[i].GetStepID();
+                parentID = stepCollection[i].GetParentID();
 
                 strncpy( particle_name, tmp_particle_name.c_str(), max_char_len);
                 strncpy( process_name, tmp_process_name.c_str(), max_char_len);

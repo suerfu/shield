@@ -25,7 +25,10 @@ GeneratorAction::GeneratorAction() : G4VUserPrimaryGeneratorAction() {
     
     fgun = new G4ParticleGun();
     fgps = new G4GeneralParticleSource();
-    
+
+    //Npostponed = 0;
+    //NDelayed = 0;
+
     file = 0;
     tree = 0;
     index = 0;
@@ -127,7 +130,7 @@ void GeneratorAction::ConfineOnWall(){
 
 
 void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
-
+    
     if( sample==true ){
         tree->GetEntry( index%nentries );
         int counter = 0;
@@ -176,3 +179,4 @@ void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
         fgps->GeneratePrimaryVertex(anEvent);
     }
 }
+

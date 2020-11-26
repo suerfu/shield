@@ -13,6 +13,7 @@
 #include "EventAction.hh"
 #include "TrackingAction.hh"
 #include "SteppingAction.hh"
+#include "StackingAction.hh"
 
 #include "G4UImanager.hh"
 #include "G4UIcommand.hh"
@@ -145,16 +146,9 @@ int main(int argc,char** argv){
 
     runManager->SetUserInitialization( physicsList );
   
-    // avoid using ActionInitialization for now
-    /*
-    ActionInitialization* actionInitialization
-        = new ActionInitialization( detConstruction, filename);
-    runManager->SetUserInitialization( actionInitialization );
-    */
-
-
     // Primary generator
-    runManager->SetUserAction( new GeneratorAction() );
+    GeneratorAction* genact = new GeneratorAction();
+    runManager->SetUserAction( genact );
 
 
     // Run action
@@ -168,9 +162,10 @@ int main(int argc,char** argv){
     EventAction* eventAction = new EventAction( runAction );
     runManager->SetUserAction( eventAction );
 
-    // Tracking and stepping
+    // Tracking, stepping and stacking action
     runManager->SetUserAction( new TrackingAction( eventAction ) );
     runManager->SetUserAction( new SteppingAction( detConstruction, eventAction ) );
+    runManager->SetUserAction( new StackingAction( eventAction ) );
 
     runManager->Initialize();
     detConstruction->CreateImportanceStore();

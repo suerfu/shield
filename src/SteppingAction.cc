@@ -26,19 +26,35 @@ SteppingAction::~SteppingAction(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void SteppingAction::UserSteppingAction(const G4Step* step){
+void SteppingAction::UserSteppingAction( const G4Step* step){
+    
+    G4Track* track = step->GetTrack();
+
+    G4int parentID = track->GetParentID();
+    G4int stepNo =  track->GetCurrentStepNumber();
+    
+    G4StepPoint* preStep = step->GetPreStepPoint();
+    G4StepPoint* postStep = step->GetPostStepPoint();
+
+    G4String particle = track->GetParticleDefinition()->GetParticleName();
+    G4String particleType = track->GetParticleDefinition()->GetParticleType();
+    G4String procName = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
 
     // Collect energy and number of scatters step by step
     // Don't save the out of world step
-    if(!step->GetPostStepPoint()->GetPhysicalVolume()) return;
+    // if(!postStep->GetPhysicalVolume()) return;
 
-    G4Track* track = step->GetTrack();
-    G4String particle = track->GetParticleDefinition()->GetParticleName();
+    if( procName=="Transportation" && step->GetTotalEnergyDeposit()<1.e-6*CLHEP::eV )
+        return;
 
+    /*
+    // Record only EM interactions.
     if( particle=="gamma" || particle=="e+" || particle=="e-"){
         fEventAction->GetStepCollection().push_back(StepInfo(step));
     }
+    */
     
+    fEventAction->GetStepCollection().push_back(StepInfo(step));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

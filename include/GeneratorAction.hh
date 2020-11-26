@@ -52,8 +52,8 @@ public:
         // When this method is called, it is assumed that the primary particle position is on the surface of the wall.
         // Momentum direction w.r.t normal of the wall has theta and phi as polar and azimuth angle.
 
-
 private:
+
     GeneratorMessenger* primaryGeneratorMessenger;
 
     G4ParticleGun*  fgun;
