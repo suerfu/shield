@@ -1,10 +1,8 @@
 /run/initialize
 /tracking/verbose 0
 
-/generator/spectrum /global/home/users/suerfu/data/veto/Pb/Pb_U238.root
+/generator/spectrum /global/home/users/suerfu/data/tesseract_shielding/wall/wall_Th232.root
 #/generator/confineOnWall
-
-#/gun/particle gamma
 
 /run/printProgress 1000000
 /run/beamOn 1000000000
