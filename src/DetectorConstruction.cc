@@ -44,11 +44,15 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
 
     offset = 5*cm;
 
-    list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL", 152*cm, 1) );
-    list.push_back( ShieldInfo("Pb",    "G4_Pb", 142*cm, 1, 1) );
-    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 102*cm, 1) );
-    list.push_back( ShieldInfo("Cu",    "G4_Cu", 42*cm, 1, 1) );
-    list.push_back( ShieldInfo("chamber",    "liquid_helium", 30*cm, 1) );
+    // Constructor format: Name, Material, Largest dim, Weight, No. of layers.
+    list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL",   132*cm, 1   ) );
+    list.push_back( ShieldInfo("Pb",    "G4_Pb",                122*cm, 1, 1   ) );
+    //list.push_back( ShieldInfo("Pb",    "G4_Pb",                122*cm, 1   ) );
+    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE",      82*cm,  1   ) );
+        // PE should be 122 102 82 for 10 20 and 30 cm of lead.
+    list.push_back( ShieldInfo("Cu",    "G4_Cu",                42*cm,  1, 1   ) );
+    list.push_back( ShieldInfo("veto",  "NaI",                  30*cm,  1   ) );
+    list.push_back( ShieldInfo("chamber",    "liquid_helium",   20*cm,  1   ) );
 
     list = ExpandList( list );
 }
@@ -109,8 +113,14 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
         }
         list[i].phy = new G4PVPlacement( 0, fOffset, list[i].log, list[i].name, parent_log, false, 0);
         parent_log = list[i].log;
-
+        
         list[i].log->SetVisAttributes( G4Color( G4UniformRand(), G4UniformRand(), G4UniformRand(), 0.5) );
+
+        G4cout << "Constructed " << list[i].name << G4endl;
+        G4cout << "\tx from " << fOffset.x()-list[i].dim/2*mm << " mm to " << fOffset.x()+list[i].dim/2*mm << " mm,";
+        G4cout << "\ty from " << fOffset.y()-list[i].dim/2*mm << " mm to " << fOffset.y()+list[i].dim/2*mm << " mm,";
+        G4cout << "\tz from " << fOffset.z()-list[i].dim/2*mm << " mm to " << fOffset.z()+list[i].dim/2*mm << " mm\n";
+
     }
 
     //world_lv->SetVisAttributes( G4VisAttributes::Invisible );
@@ -124,14 +134,22 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
 void DetectorConstruction::DefineMaterials(){
 
-    G4double a;  // mass of a mole;
-    G4double z;  // z=mean number of protons;
+    G4double A;  // mass of a mole;
+    G4double Z;  // z=mean number of protons;
     G4double density; //, fractionMass;
     G4String symbol, name;
     // G4int nComponents, nAtoms;
     G4double temp;
 
-    new G4Material("liquid_helium",   z=2., a= 4.00*g/mole,  density= 0.141*g/cm3, kStateLiquid, temp=3.*kelvin);
+    new G4Material("liquid_helium",   Z=2., A= 4.00*g/mole,  density= 0.141*g/cm3, kStateLiquid, temp=3.*kelvin);
+    
+    // NaI crystal
+    G4Element* elNa = new G4Element("Sodium",  "Na", Z=11., A= 22.989768*g/mole);
+    G4Element* elI  = new G4Element("Iodine",  "I",  Z=53., A= 126.90447*g/mole);
+    density = 3.67 *g/cm3;
+    G4Material* NaI = new G4Material("NaI", density, 2);
+    NaI-> AddElement(elNa, 1);
+    NaI-> AddElement(elI,  1);
 
     /*
     G4NistManager* nistManager =  G4NistManager::Instance();

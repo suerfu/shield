@@ -7,72 +7,118 @@
 
 #include "TTree.h"
 #include "TFile.h"
+#include "TH1F.h"
 
 using namespace std;
 
-// TrackInfor is used to hold information read from input ROOT file.
-// While reading the input, Hit objects are created and filled into a vector owned by EventInfo
-// EventInfo contains all informations needed for outputting reduced quantities.
-// At the end of an event marker, Process and Reset methods are called to fill the output tree.
-
-struct TrackInfo{
-    int eventID;
-    int trackID;
-    int parentID;
-    char particle_name[16];
-    char volume_name[16];
-    char proc_name[16];
-    double Eki;
-    double Ekf;
-    double Edep;
-    double time;
-};
-
-struct Hit{
-    int parentID;
-    string particle;
-    string volume;
-    string process;
-    Double_t edep;
-    Double_t time;
-};
-
-struct EventInfo{
-    char file_name[128];
-
-    Int_t ID = -1;
-    Int_t evtID = -1;
-
-    Double_t edep = 0;
-    Double_t time = -1;
-
-    Double_t edep_veto = 0;
-    Double_t time_veto = -1;
-
-    vector<Hit> hit_collection;
-};
-
-
-// reset event info.
-void ResetEventInfo( EventInfo* wdata ){
-    wdata->ID = -1;
-    wdata->evtID = -1;
-
-    wdata->edep = 0;
-    wdata->edep_veto = 0;
-    wdata->time = -1;
-
-    wdata->hit_collection.clear();
-}
-
-void ProcessEventInfo( EventInfo* wdata );
-
-int GetIndex( string );
-
-
+// This program is used to plot histograms.
+// Input ROOT file is expected to be RQ's, not track-level information.
 
 int main( int argc, char* argv[]){ 
 
+    // Get output file name.
+    string outputName;
+    cout << "Output file name: ";
+    cin >> outputName;
+
+    TFile* outputROOTFile = 0;
+
+    string command;
+    cout << "\nEnter main to add a main histogram: ";
+    while( command=="main" || cin >> command ){
+
+        if( command!="main" ){
+            break;
+        }
+        command = "";
+
+        if( outputROOTFile==0 ){
+            outputROOTFile = new TFile( outputName.c_str(), "NEW");
+        }
+
+        // Get parameters of histogram to plot.
+        int Nbins;
+        float binMin, binMax;
+        string histName;
+        cout << "\nName, Nbins, min and max of the histogram: ";
+        cin >> histName >> Nbins >> binMin >> binMax;
+    
+        TH1F* hist = new TH1F( histName.c_str(), "", Nbins,  binMin, binMax);
+
+        // Variable / branch of TTree to plot.
+        string plotVar;
+        cout << "\nBranch to plot: ";
+        cin >> plotVar;
+
+        string vetoVar;
+        float vetoThreshold(0);
+        cout << "\nAdd veto & threshold: ";
+        cin >> vetoVar;
+        if( vetoVar!="sub" ){
+            cin >> vetoThreshold;
+        }
+        else{
+            vetoVar = "";
+            command = "sub";
+        }
+
+        // Enter event loop to read files, scale and legend.
+        // Then process the files.
+        string inputName;
+        double scale;
+
+        cout << "\nEnter main/sub to add a main/sub histogram: ";
+        while( command=="sub" || cin >> command ){
+
+            if( command!="sub" ){
+                break;
+            }
+
+            cout << "\nFile to read and scale: ";
+            cin >> inputName >> scale;
+
+            cout << "\nReading " << inputName << endl;
+            
+            TH1F temp( "temp" ,"", Nbins, binMin, binMax );
+
+            double energy = 0;
+            double energy_veto = -1;
+
+            TFile file( inputName.c_str(), "READ" );
+            TTree* tree = (TTree*) file.Get( "events" );
+            tree->SetBranchAddress( plotVar.c_str(), &energy);
+            if( vetoVar != "" ){
+                tree->SetBranchAddress( vetoVar.c_str(), &energy_veto);
+            }
+
+            for( unsigned long long n=0; n<tree->GetEntries(); n++){
+                tree->GetEntry(n);
+                if( 1.e9*energy>1 ){
+                    if( 1000*energy_veto<vetoThreshold )
+                        temp.Fill( 1000*energy );
+                }
+            }
+            temp.Sumw2();
+            temp.Scale( scale );
+            hist->Add( &temp );
+
+            cout << "\nEnter main/sub to add a main/sub histogram: ";
+            command = "";
+        }
+
+        outputROOTFile->cd();
+        hist->Write();
+        if( command!="main" && cin.good() ){
+            cout << "\nEnter main to add a main histogram: ";
+        }
+    }
+    cout << "\nWriting output...\n";
+    if( outputROOTFile!=0 )
+        outputROOTFile->Write();
+
+    return 0;
+
+/*
     bool print_usage = false;
     if( argc==1 ){
         print_usage = true;
@@ -105,7 +151,6 @@ int main( int argc, char* argv[]){
     tree->Branch( "evtID", &wdata.evtID, "evtID/I");
     tree->Branch( "Edep", &wdata.edep, "Edep/D" );
     tree->Branch( "time", &wdata.time, "time/D");
-    tree->Branch( "Edep_veto", &wdata.edep_veto, "Edep_veto/D" );
     
 
     // ************************** //
@@ -147,21 +192,12 @@ int main( int argc, char* argv[]){
         // * Process the input file * //
         // ************************** //
 
-        int evt_counter = 0;
+        int evt_counter = -1;
         for( unsigned int i=0; i<nentries; i++){
             
             events->GetEntry(i);
 
-            bool newEvent = false;
-
-            if( strncmp(data.proc_name, "newEvent", 8)==0 )
-                newEvent = true;
-            else if( strncmp(data.proc_name, "timeReset", 9)==0 )
-                newEvent = true;
-            else if( data.parentID==0 && strncmp( data.proc_name, "initStep", 8)==0 )
-                newEvent = true;
-
-            if(  newEvent==true || i==nentries-1 ){
+            if( ( data.parentID==0 && strncmp( data.proc_name, "initStep", 8)==0 ) || i==nentries-1 ){
 
                 if( i!=0 ){
                     ProcessEventInfo( &wdata );
@@ -198,41 +234,7 @@ int main( int argc, char* argv[]){
     outfile->Close();
 
     return 0;
+*/
 }
 
 
-
-void ProcessEventInfo( EventInfo* wdata ){
-    
-    vector<Hit> hc = wdata->hit_collection;
-
-    for( unsigned int i=0; i<hc.size(); i++){
-        // compute the time that the particle hit the liquid helium
-        if( hc[i].volume=="chamber" ){
-            wdata->edep += hc[i].edep;
-        }
-        else if( hc[i].volume=="veto" ){
-            wdata->edep_veto += hc[i].edep;
-        }
-    }
-}
-
-int GetIndex( string fs_name){
-    
-    int nchar = 0;
-    if( fs_name.find("NaI")!=string::npos)
-        nchar = 3;
-    else
-        nchar = 2;
-    
-    stringstream ss( fs_name );
-    char foo;
-    for( unsigned int i=0; i<nchar; i++){
-        ss >> foo;
-    }
-
-    unsigned index = 0;
-    ss >> index;
-
-    return index;
-}

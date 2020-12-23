@@ -1,0 +1,118 @@
+pb20_pe20_veto.root
+
+main
+pb20_pe20_tot 500 0 3000
+Edep
+
+sub ~/data/tesseract_shielding/rq/shield_run12_K40.root             0.00000784540
+sub ~/data/tesseract_shielding/rq/shield_run12_U238.root                0.00003036141
+sub ~/data/tesseract_shielding/rq/shield_run12_Th232.root               0.00001825777
+
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_K40.root             0.05044297872   
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_U238.root                0.3857404255    
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_Th232.root               0.1186893617    
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_K40.root               0.000001436284187   
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_U238.root              0.0000000897677617  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_Th232.root             0.00000002944382584 
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_Co60.root              0.0000007181420936  
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_K40.root               0.0001596194043 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_U238.root              0.00000006300765957 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Th232.root             0.00000002016245106 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Pb210.root             0.005880714894  
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Co60.root              0.00001092132766    
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_K40.root               0.001274538791  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_U238.root              0.000360512401  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_Th232.root             0.0002731154553 
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_Pb210.root             0.0004369847285 
+
+
+main
+pb20_pe20_tot_veto 5000 0 3000
+Edep
+Edep_veto 10
+
+sub ~/data/tesseract_shielding/rq/shield_run12_K40.root             0.00000784540
+sub ~/data/tesseract_shielding/rq/shield_run12_U238.root                0.00003036141
+sub ~/data/tesseract_shielding/rq/shield_run12_Th232.root               0.00001825777
+
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_K40.root             0.05044297872   
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_U238.root                0.3857404255    
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_Th232.root               0.1186893617    
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_K40.root               0.000001436284187   
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_U238.root              0.0000000897677617  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_Th232.root             0.00000002944382584 
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_Co60.root              0.0000007181420936  
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_K40.root               0.0001596194043 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_U238.root              0.00000006300765957 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Th232.root             0.00000002016245106 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Pb210.root             0.005880714894  
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Co60.root              0.00001092132766    
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_K40.root               0.001274538791  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_U238.root              0.000360512401  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_Th232.root             0.0002731154553 
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_Pb210.root             0.0004369847285 
+
+
+main
+pb20_pe20_ext 5000 0 3000
+Edep
+
+sub ~/data/tesseract_shielding/rq/shield_run12_K40.root             0.00000784540
+sub ~/data/tesseract_shielding/rq/shield_run12_U238.root                0.00003036141
+sub ~/data/tesseract_shielding/rq/shield_run12_Th232.root               0.00001825777
+
+main
+pb20_pe20_ext_veto 5000 0 3000
+Edep
+Edep_veto 10
+
+sub ~/data/tesseract_shielding/rq/shield_run12_K40.root             0.00000784540
+sub ~/data/tesseract_shielding/rq/shield_run12_U238.root                0.00003036141
+sub ~/data/tesseract_shielding/rq/shield_run12_Th232.root               0.00001825777
+
+
+main
+pb20_pe20_int 5000 0 3000
+Edep
+
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_K40.root             0.05044297872   
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_U238.root                0.3857404255    
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_Th232.root               0.1186893617    
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_K40.root               0.000001436284187   
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_U238.root              0.0000000897677617  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_Th232.root             0.00000002944382584 
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_Co60.root              0.0000007181420936  
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_K40.root               0.0001596194043 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_U238.root              0.00000006300765957 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Th232.root             0.00000002016245106 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Pb210.root             0.005880714894  
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Co60.root              0.00001092132766    
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_K40.root               0.001274538791  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_U238.root              0.000360512401  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_Th232.root             0.0002731154553 
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_Pb210.root             0.0004369847285 
+
+main
+pb20_pe20_int_veto 5000 0 3000
+Edep
+Edep_veto 10
+
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_K40.root             0.05044297872   
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_U238.root                0.3857404255    
+sub ~/data/tesseract_shielding/rq/impurity_run13_veto_Th232.root               0.1186893617    
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_K40.root               0.000001436284187   
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_U238.root              0.0000000897677617  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_Th232.root             0.00000002944382584 
+sub ~/data/tesseract_shielding/rq/impurity_run13_Cu_Co60.root              0.0000007181420936  
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_K40.root               0.0001596194043 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_U238.root              0.00000006300765957 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Th232.root             0.00000002016245106 
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Pb210.root             0.005880714894  
+sub ~/data/tesseract_shielding/rq/impurity_run13_PE_Co60.root              0.00001092132766    
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_K40.root               0.001274538791  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_U238.root              0.000360512401  
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_Th232.root             0.0002731154553 
+sub ~/data/tesseract_shielding/rq/impurity_run13_Pb_Pb210.root             0.0004369847285 
+
+
+
