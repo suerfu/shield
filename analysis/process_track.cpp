@@ -147,7 +147,18 @@ int main( int argc, char* argv[]){
             
             events->GetEntry(i);
 
-            if( ( data.parentID==0 && strncmp( data.proc_name, "initStep", 8)==0 ) || i==nentries-1 ){
+            bool fillTree = false;
+
+            if(  ( strncmp( data.proc_name, "newEvent", 8)==0 ) )
+                fillTree = true;
+            else if(  ( strncmp( data.proc_name, "timeReset", 9)==0 ) )
+                fillTree = true;
+            else if(i==nentries-1 )
+                fillTree = true;
+            else if(  ( data.parentID==0 && strncmp( data.proc_name, "initStep", 8)==0 ) )
+                fillTree = true;
+
+            if( fillTree==true ){
 
                 if( i!=0 ){
                     ProcessEventInfo( &wdata );

@@ -52,7 +52,7 @@ int main( int argc, char* argv[]){
 
         string vetoVar;
         float vetoThreshold(0);
-        cout << "\nAdd veto & threshold: ";
+        cout << "\nAdd veto & threshold (enter sub to skip veto option): ";
         cin >> vetoVar;
         if( vetoVar!="sub" ){
             cin >> vetoThreshold;
