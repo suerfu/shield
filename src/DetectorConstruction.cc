@@ -43,7 +43,7 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
     world_z = 3.2*m;
 
     offset = 5*cm;
-/*
+
     // Constructor format: Name, Material, Largest dim, Weight, No. of layers.
     list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL",   132*cm, 1   ) );
     list.push_back( ShieldInfo("Pb",    "G4_Pb",                122*cm, 1, 1   ) );
@@ -51,17 +51,22 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
     list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE",      82*cm,  1   ) );
         // PE should be 122 102 82 for 10 20 and 30 cm of lead.
     list.push_back( ShieldInfo("Cu",    "G4_Cu",                42*cm,  1, 1   ) );
-    list.push_back( ShieldInfo("veto",  "G4_Cu",                30*cm,  1   ) );
+    list.push_back( ShieldInfo("veto",  "G4_Cu", 30*cm,  1   ) );
+    list.push_back( ShieldInfo("cryostat",  "G4_STAINLESS-STEEL",   20.6*cm,  1   ) );
     list.push_back( ShieldInfo("chamber",    "liquid_helium",   20*cm,  1   ) );
-*/
 
+    // The thickness for stainless steel cryostat is 3 mm.
+    // According to https://lss.fnal.gov/archive/test-tm/1000/fermilab-tm-1378.pdf
+    // The minimum thickness required is about 0.1 inch, or 2.5 mm.
+
+/*
     list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL",   132*cm, 1   ) );
     list.push_back( ShieldInfo("Pb",    "G4_Pb",                122*cm, 2, 10  ) );
     list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE",      82*cm,  1   ) );
     list.push_back( ShieldInfo("Cu",    "G4_Cu",                42*cm,  2, 2   ) );
     list.push_back( ShieldInfo("veto",  "G4_Cu",                30*cm,  1   ) );
     list.push_back( ShieldInfo("chamber",    "liquid_helium",   20*cm,  1   ) );
-
+*/
     list = ExpandList( list );
 }
 
