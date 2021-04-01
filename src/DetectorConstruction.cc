@@ -4,9 +4,6 @@
 
 #include "DetectorConstruction.hh"
 
-//#include "G4tgbVolumeMgr.hh"
-
-//#include "G4RunManager.hh"
 #include "G4Material.hh"
 #include "G4NistManager.hh"
 
@@ -14,6 +11,7 @@
 
 #include "G4Box.hh"
 #include "G4Tubs.hh"
+#include "G4SubtractionSolid.hh"
 #include "G4PVPlacement.hh"
 
 #include "G4VisAttributes.hh"
@@ -113,7 +111,15 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
     for( unsigned int i=0; i<list.size(); i++ ){
         G4cout << "Constructing " << list[i].name << " shielding with importance " << list[i].bias << G4endl;
         
-        G4Box* solid = new G4Box( list[i].name+"_solid", list[i].dim/2.0, list[i].dim/2.0, list[i].dim/2.0);
+        G4double diameter = 40*cm;
+            // Diameter of the opening due to fridge cryostat.
+        G4Box* box = new G4Box( "box", list[i].dim/2.0, list[i].dim/2.0, list[i].dim/2.0);
+        G4Tubs* hole = new G4Tubs( "cylinder", 0, diameter/2, list[i].dim/2, 0, CLHEP::twopi );
+        G4VSolid* solid;
+        if( i < list.size()-3 && i != 0 )
+            solid = new G4SubtractionSolid( list[i].name+"_solid", box, hole, 0, G4ThreeVector(0,0,list[i].dim/2) );
+        else
+            solid = box;
 
         list[i].log = new G4LogicalVolume( solid, mat_man->FindOrBuildMaterial(list[i].material), list[i].name+"_log");
 
@@ -134,7 +140,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
     }
 
-    //world_lv->SetVisAttributes( G4VisAttributes::Invisible );
+    world_lv->SetVisAttributes( G4VisAttributes::Invisible );
 
     return world_pv;
 }
