@@ -116,10 +116,12 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
         G4Box* box = new G4Box( "box", list[i].dim/2.0, list[i].dim/2.0, list[i].dim/2.0);
         G4Tubs* hole = new G4Tubs( "cylinder", 0, diameter/2, list[i].dim/2, 0, CLHEP::twopi );
         G4VSolid* solid;
-        if( i < list.size()-3 && i != 0 )
-            solid = new G4SubtractionSolid( list[i].name+"_solid", box, hole, 0, G4ThreeVector(0,0,list[i].dim/2) );
-        else
+        if( i < list.size()-3 && i != 0 ){
+            solid = new G4SubtractionSolid( list[i].name+"_solid", box, hole, 0, G4ThreeVector(0,0,list[i+1].dim/2) );
+        }
+        else{
             solid = box;
+        }
 
         list[i].log = new G4LogicalVolume( solid, mat_man->FindOrBuildMaterial(list[i].material), list[i].name+"_log");
 
@@ -128,7 +130,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
             parent_log = world_lv;
             fOffset = G4ThreeVector(0,0,-world_z/2+list[i].dim/2+offset);
         }
-        list[i].phy = new G4PVPlacement( 0, fOffset, list[i].log, list[i].name, parent_log, false, 0);
+        list[i].phy = new G4PVPlacement( 0, fOffset, list[i].log, list[i].name, parent_log, false, 0, fCheckOverlaps);
         parent_log = list[i].log;
         
         list[i].log->SetVisAttributes( G4Color( G4UniformRand(), G4UniformRand(), G4UniformRand(), 0.5) );
