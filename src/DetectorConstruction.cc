@@ -117,7 +117,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
         G4Tubs* hole = new G4Tubs( "cylinder", 0, diameter/2, list[i].dim/2, 0, CLHEP::twopi );
         G4VSolid* solid;
         if( i < list.size()-3 && i != 0 ){
-            solid = new G4SubtractionSolid( list[i].name+"_solid", box, hole, 0, G4ThreeVector(0,0,list[i+1].dim/2) );
+            solid = new G4SubtractionSolid( list[i].name+"_solid", box, hole, 0, G4ThreeVector(0,0,list[i+1].dim/2 + list[i].dim/2) );
         }
         else{
             solid = box;
