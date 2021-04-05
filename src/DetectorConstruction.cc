@@ -46,11 +46,11 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
 
     G4double chamber_dim = 20*cm;
     
-    G4double cryo_thickness = 6*mm;
-    G4double cryo_dim = chamber_dim + 2*cryo_thickness;
+    G4double NaI_thickness = 15*cm;
+    G4double NaI_dim = chamber_dim + 2*NaI_thickness;
 
-    G4double NaI_thickness = 10*cm;
-    G4double NaI_dim = cryo_dim + 2*NaI_thickness;
+    G4double cryo_thickness = 6*mm;
+    G4double cryo_dim = NaI_dim + 2*cryo_thickness;
 
     G4double copper_dim = NaI_dim + 2 * 6*cm;
     G4double PE_dim = copper_dim + 2 * 20*cm;
@@ -62,8 +62,8 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
     list.push_back( ShieldInfo("Pb",    "G4_Pb",                Pb_dim, 1, 1   ) );
     list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE",      PE_dim,  1   ) );
     list.push_back( ShieldInfo("Cu",    "G4_Cu",                copper_dim,  1, 1   ) );
-    list.push_back( ShieldInfo("veto",  "NaI", NaI_dim,  1   ) );
     list.push_back( ShieldInfo("cryostat",  "G4_Ti",   cryo_dim,  1   ) );
+    list.push_back( ShieldInfo("veto",  "NaI", NaI_dim,  1   ) );
     list.push_back( ShieldInfo("chamber",    "liquid_helium",   chamber_dim,  1   ) );
 
     // The thickness for stainless steel cryostat is 3 mm.
