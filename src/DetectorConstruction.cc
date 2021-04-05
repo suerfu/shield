@@ -44,16 +44,27 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
 
     offset = 5*cm;
 
+    G4double chamber_dim = 20*cm;
+    
+    G4double cryo_thickness = 6*mm;
+    G4double cryo_dim = chamber_dim + 2*cryo_thickness;
+
+    G4double NaI_thickness = 10*cm;
+    G4double NaI_dim = cryo_dim + 2*NaI_thickness;
+
+    G4double copper_dim = NaI_dim + 2 * 6*cm;
+    G4double PE_dim = copper_dim + 2 * 20*cm;
+    G4double Pb_dim = PE_dim + 2 * 20*cm;
+    G4double frame_dim = Pb_dim + 2 * 5*cm;
+
     // Constructor format: Name, Material, Largest dim, Weight, No. of layers.
-    list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL",   132*cm, 1   ) );
-    list.push_back( ShieldInfo("Pb",    "G4_Pb",                122*cm, 1, 1   ) );
-    //list.push_back( ShieldInfo("Pb",    "G4_Pb",                122*cm, 1   ) );
-    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE",      82*cm,  1   ) );
-        // PE should be 122 102 82 for 10 20 and 30 cm of lead.
-    list.push_back( ShieldInfo("Cu",    "G4_Cu",                42*cm,  1, 1   ) );
-    list.push_back( ShieldInfo("veto",  "G4_Cu", 30*cm,  1   ) );
-    list.push_back( ShieldInfo("cryostat",  "G4_STAINLESS-STEEL",   20.6*cm,  1   ) );
-    list.push_back( ShieldInfo("chamber",    "liquid_helium",   20*cm,  1   ) );
+    list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL",   frame_dim, 1   ) );
+    list.push_back( ShieldInfo("Pb",    "G4_Pb",                Pb_dim, 1, 1   ) );
+    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE",      PE_dim,  1   ) );
+    list.push_back( ShieldInfo("Cu",    "G4_Cu",                copper_dim,  1, 1   ) );
+    list.push_back( ShieldInfo("veto",  "NaI", NaI_dim,  1   ) );
+    list.push_back( ShieldInfo("cryostat",  "G4_Ti",   cryo_dim,  1   ) );
+    list.push_back( ShieldInfo("chamber",    "liquid_helium",   chamber_dim,  1   ) );
 
     // The thickness for stainless steel cryostat is 3 mm.
     // According to https://lss.fnal.gov/archive/test-tm/1000/fermilab-tm-1378.pdf
