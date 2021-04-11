@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <cstring>
 
 #include "TTree.h"
 #include "TFile.h"
@@ -19,9 +20,10 @@ struct TrackInfo{
     int eventID;
     int trackID;
     int parentID;
-    char particle_name[16];
+    char particle_name[8];
     char volume_name[16];
     char proc_name[16];
+    double pos[3];
     double Eki;
     double Ekf;
     double Edep;
@@ -49,18 +51,32 @@ struct EventInfo{
     Double_t edep_veto = 0;
     Double_t time_veto = -1;
 
+    Double_t sx = 0;
+    Double_t sy = 0;
+    Double_t sz = 0;
+    Double_t sE = -1;
+    char sName[8];
+
     vector<Hit> hit_collection;
 };
 
 
 // reset event info.
 void ResetEventInfo( EventInfo* wdata ){
+    
+    strcpy( wdata->file_name, "null");
     wdata->ID = -1;
     wdata->evtID = -1;
 
     wdata->edep = 0;
     wdata->edep_veto = 0;
     wdata->time = -1;
+
+    wdata->sx = 0;
+    wdata->sy = 0;
+    wdata->sz = 0;
+    wdata->sE = -1;
+    strcpy( wdata->sName, "null");
 
     wdata->hit_collection.clear();
 }
@@ -106,6 +122,11 @@ int main( int argc, char* argv[]){
     tree->Branch( "Edep", &wdata.edep, "Edep/D" );
     tree->Branch( "time", &wdata.time, "time/D");
     tree->Branch( "Edep_veto", &wdata.edep_veto, "Edep_veto/D" );
+    tree->Branch( "x_src", &wdata.sx, "x_src/D");
+    tree->Branch( "y_src", &wdata.sy, "y_src/D");
+    tree->Branch( "z_src", &wdata.sz, "z_src/D");
+    tree->Branch( "E_src", &wdata.sE, "E_src/D");
+    tree->Branch( "name_src", &wdata.sName, "name_src[8]/C");
     
 
     // ************************** //
@@ -136,6 +157,9 @@ int main( int argc, char* argv[]){
         events -> SetBranchAddress("parentID", &data.parentID);
         events -> SetBranchAddress("particle", &data.particle_name);
         events -> SetBranchAddress("volume", &data.volume_name);
+        events -> SetBranchAddress("x", &data.pos[0]);
+        events -> SetBranchAddress("y", &data.pos[1]);
+        events -> SetBranchAddress("z", &data.pos[2]);
         events -> SetBranchAddress("Eki", &data.Eki);
         events -> SetBranchAddress("Ekf", &data.Ekf);
         events -> SetBranchAddress("Edep", &data.Edep);
@@ -154,14 +178,26 @@ int main( int argc, char* argv[]){
 
             bool newEvent = false;
 
-            if( strncmp(data.proc_name, "newEvent", 8)==0 )
+            if( strncmp(data.proc_name, "newEvent", 8)==0 ){
                 newEvent = true;
-            else if( strncmp(data.proc_name, "timeReset", 9)==0 )
+            }
+            else if( strncmp(data.proc_name, "timeReset", 9)==0 ){
                 newEvent = true;
-            else if( data.parentID==0 && strncmp( data.proc_name, "initStep", 8)==0 )
+            }
+            else if( data.parentID==0 && strncmp( data.proc_name, "initStep", 8)==0 ){
                 newEvent = true;
+            }
 
-            if(  newEvent==true || i==nentries-1 ){
+            if( newEvent==true ){
+                strncpy( wdata.file_name, argv[t], 128);
+                strncpy( wdata.sName, data.particle_name, 8);
+                wdata.sx = data.pos[0];
+                wdata.sy = data.pos[1];
+                wdata.sz = data.pos[2];
+                wdata.sE = data.Eki;
+            }
+
+            if( newEvent==true || i==nentries-1 ){
 
                 if( i!=0 ){
                     ProcessEventInfo( &wdata );
@@ -187,7 +223,6 @@ int main( int argc, char* argv[]){
 
                 wdata.hit_collection.push_back( hit );
             }
-
         }
 
         infile->Close();
