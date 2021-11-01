@@ -4,9 +4,8 @@
 
 #include "DetectorConstruction.hh"
 
-//#include "G4tgbVolumeMgr.hh"
+#include "G4SubtractionSolid.hh"
 
-//#include "G4RunManager.hh"
 #include "G4Material.hh"
 #include "G4NistManager.hh"
 
@@ -38,19 +37,43 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction() {
     // Set default values for the dimensions.
     
     // World
-    world_x = 11.*m;
-    world_y = 12.*m;
-    world_z = 3.2*m;
+    // By default 1m x 1m x 1m
+    world_x = 1.*m;
+    world_y = 1.*m;
+    world_z = 1.*m;
 
-    offset = 5*cm;
+    //===============  Build Geometry ===============//
+    
+    G4NistManager* mat_man = G4NistManager::Instance(); //material mananger
+    G4Material* world_material = mat_man->FindOrBuildMaterial("G4_Galactic");
 
-    list.push_back( ShieldInfo("frame", "G4_STAINLESS-STEEL", 152*cm, 1) );
-    list.push_back( ShieldInfo("Pb",    "G4_Pb", 142*cm, 1, 1) );
-    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 102*cm, 1) );
-    list.push_back( ShieldInfo("Cu",    "G4_Cu", 42*cm, 1, 1) );
-    list.push_back( ShieldInfo("chamber",    "liquid_helium", 30*cm, 1) );
+    G4Box* world_solid = new G4Box( "world_solid", world_x/2.0, world_y/2.0, world_z/2.0);
+    world_lv = new G4LogicalVolume( world_solid, world_material, "world_lv");
+    world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), world_lv, "world", 0, false, 0,fCheckOverlaps);
+
+/*
+    list.push_back( ShieldInfo("SS", "G4_STAINLESS-STEEL", 100*cm, 1) );
+    list.push_back( ShieldInfo("Pb",    "G4_Pb", 80*cm, 1, 1) );
+    list.push_back( ShieldInfo("PE",    "G4_POLYETHYLENE", 70*cm, 1) );
+    list.push_back( ShieldInfo("Cu",    "G4_Cu", 60*cm, 1, 1) );
+    list.push_back( ShieldInfo("He",    "liquid_helium", 50*cm, 1) );
+    list.push_back( ShieldInfo("C",     "G4_C", 40*cm, 1) );
+    list.push_back( ShieldInfo("Ge",    "G4_Ge", 30*cm, 1) );
+*/    
+    list.push_back( ShieldInfo("Si4",    "G4_Si", 90*cm, 1) );
+    list.push_back( ShieldInfo("He2",    "liquid_helium", 80*cm, 1) );
+    list.push_back( ShieldInfo("Si3",    "G4_Si", 70*cm, 1) );
+    list.push_back( ShieldInfo("He1",    "liquid_helium", 60*cm, 1) );
+    list.push_back( ShieldInfo("C2",     "G4_C", 50*cm, 1) );
+
+    list.push_back( ShieldInfo("Si2",    "G4_Si", 40*cm, 1) );
+    list.push_back( ShieldInfo("C1",     "G4_C", 30*cm, 1) );
+
+    list.push_back( ShieldInfo("Si1",    "G4_Si", 20*cm, 1) );
+    list.push_back( ShieldInfo("center","G4_Galactic", 10*cm, 1) );
 
     list = ExpandList( list );
+
 }
 
 
@@ -61,6 +84,21 @@ DetectorConstruction::~DetectorConstruction(){
     delete fDetectorMessenger;
 }
 
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+/*
+G4VPhysicalVolume* DetectorConstruction::AddStandaloneVolume( G4String name, G4String mat_name, G4double L1, G4double L2 ){
+
+    G4NistManager* mat_man = G4NistManager::Instance(); //material mananger
+    G4Material* mat = mat_man->FindOrBuildMaterial(mat_name);
+
+    G4Box* solid1 = new G4Box( name+"_solid1", L1/2, L1/2, L1/2);
+    G4Box* solid2 = new G4Box( name+"_solid2", L2/2, L2/2, L2/2);
+    G4SubtractionSolid* solid = new G4SubtractionSolid( name+"_solid", solid1, solid2);
+    G4LogicalVolume* log = new G4LogicalVolume( solid, mat, name+"_log");
+    G4VPhysicalVolume* phy = new G4PVPlacement( 0, G4ThreeVector(0,0,0), log, name+"_phys", world_lv, false, 0, fCheckOverlaps);
+}
+*/
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -76,39 +114,44 @@ G4VPhysicalVolume* DetectorConstruction::Construct(){
 
 G4VPhysicalVolume* DetectorConstruction::DefineVolumes(){
 
-    //===============  Materials ===============//
-
     G4NistManager* mat_man = G4NistManager::Instance(); //material mananger
     G4Material* world_material = mat_man->FindOrBuildMaterial("G4_Galactic");
-    
-    //===============  Build Geometry ===============//
-
-    // World
-    G4Box* world_solid = new G4Box( "world_solid", world_x/2.0, world_y/2.0, world_z/2.0);
-    G4LogicalVolume* world_lv = new G4LogicalVolume( world_solid, world_material, "world_lv");
-    world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), world_lv, "world", 0, false, 0,fCheckOverlaps);
-
     
     // Add the shieldings
     // The list must be created from outside towards inside.
     // The outermost layer is not created, but instead the logical volume is returned.
 
-    G4LogicalVolume* parent_log = 0;
+    G4LogicalVolume* parent_log = world_lv;
+
+    if( nested==true ){
+        G4cout << "Creating logically nested geometries.\n";
+    }
+    else{
+        G4cout << "Creating standalone geometries using boolean operations.\n";
+    }
 
     for( unsigned int i=0; i<list.size(); i++ ){
         G4cout << "Constructing " << list[i].name << " shielding with importance " << list[i].bias << G4endl;
         
-        G4Box* solid = new G4Box( list[i].name+"_solid", list[i].dim/2.0, list[i].dim/2.0, list[i].dim/2.0);
+        G4VSolid* solid = 0;
+        
+        if( nested==true || i==list.size()-1 ){
+            solid = new G4Box( list[i].name+"_solid", list[i].dim/2.0, list[i].dim/2.0, list[i].dim/2.0);
+        }
+        else{
+            G4Box* solid1 = new G4Box( list[i].name+"_solid1", list[i].dim/2.0, list[i].dim/2.0, list[i].dim/2.0);
+            G4Box* solid2 = new G4Box( list[i].name+"_solid2", list[i+1].dim/2.0, list[i+1].dim/2.0, list[i+1].dim/2.0);
+            solid = new G4SubtractionSolid( list[i].name+"_solid", solid1, solid2 );
+        }
 
         list[i].log = new G4LogicalVolume( solid, mat_man->FindOrBuildMaterial(list[i].material), list[i].name+"_log");
 
         G4ThreeVector fOffset(0,0,0);
-        if( i==0 ){
-            parent_log = world_lv;
-            fOffset = G4ThreeVector(0,0,-world_z/2+list[i].dim/2+offset);
-        }
+
         list[i].phy = new G4PVPlacement( 0, fOffset, list[i].log, list[i].name, parent_log, false, 0);
-        parent_log = list[i].log;
+        if( nested ){
+            parent_log = list[i].log;
+        }
 
         list[i].log->SetVisAttributes( G4Color( G4UniformRand(), G4UniformRand(), G4UniformRand(), 0.5) );
     }

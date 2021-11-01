@@ -42,11 +42,18 @@ public:
     void SetChamberHeight();
     void SetShieldingThickness( G4String, G4double );
 
+    void SetGeometryMode( bool b){ nested = b;}
+
 private:
-    
+
+    bool nested;
+        // Boolean controlling whether geometry is constructed using logical nesting or otherwise boolean operation to get standalone geometries.
+
     void DefineMaterials();
 
     G4VPhysicalVolume* DefineVolumes();
+
+    G4VPhysicalVolume* AddStandaloneVolume( G4String name, G4String mat_name, G4double L1, G4double L2 );
 
     DetectorConstructionMessenger* fDetectorMessenger;
 
@@ -55,7 +62,10 @@ private:
     // Variables related to the dimensions of the setup.
 
     // World
+
     G4VPhysicalVolume* world_pv;
+    G4LogicalVolume* world_lv;
+
     G4double world_x;
     G4double world_y;
     G4double world_z;

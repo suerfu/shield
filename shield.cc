@@ -68,6 +68,7 @@ int main(int argc,char** argv){
     seeds[0] = (long) systime;
     seeds[1] = (long) (systime*G4UniformRand());
 
+    bool geom_nested = true;
     
     // Loop over the commandline arguments.
     // 
@@ -100,6 +101,10 @@ int main(int argc,char** argv){
             seeds[1] = G4long(argv[++i]);
                 // random seeds
         }
+        else if ( G4String(argv[i]) == "--standalone" ){
+            geom_nested = false;
+                // output filename
+        }
     }
 
 
@@ -131,6 +136,7 @@ int main(int argc,char** argv){
     
     // Construct detector geometry
     DetectorConstruction* detConstruction = new DetectorConstruction();
+    detConstruction->SetGeometryMode( geom_nested);
     runManager->SetUserInitialization( detConstruction );
     
     // Physics list. Use a ready-to-use list.
